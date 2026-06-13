@@ -1,0 +1,9 @@
+{
+  "project": "IRCMS",
+  "document": "Customer Due Diligence Update",
+  "summary": "3 regulatory changes detected, 3 gaps identified.",
+  "high_risk_gaps": 3,
+  "approval_required": true,
+  "recommended_action": "Approve remediation plan and assign owners",
+  "metrics_reference": "output/metrics.json"
+}

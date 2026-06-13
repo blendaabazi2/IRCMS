@@ -1,0 +1,35 @@
+[
+  {
+    "gap_id": "GAP-001",
+    "change_id": "CHG-001",
+    "policy_area": "KYC",
+    "current_policy": "KYC review for high-risk customers is performed every 24 months",
+    "required_policy": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
+    "gap_status": "Non-compliant",
+    "severity": "High",
+    "owner": "Compliance Team",
+    "evidence_id": "EV-001"
+  },
+  {
+    "gap_id": "GAP-002",
+    "change_id": "CHG-002",
+    "policy_area": "Monitoring",
+    "current_policy": "Suspicious transactions are reviewed weekly",
+    "required_policy": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
+    "gap_status": "Non-compliant",
+    "severity": "High",
+    "owner": "AML Team",
+    "evidence_id": "EV-002"
+  },
+  {
+    "gap_id": "GAP-003",
+    "change_id": "CHG-003",
+    "policy_area": "Audit",
+    "current_policy": "Evidence and audit logs are retained for 3 years",
+    "required_policy": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
+    "gap_status": "Non-compliant",
+    "severity": "High",
+    "owner": "Audit Team",
+    "evidence_id": "EV-003"
+  }
+]

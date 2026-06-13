@@ -1,0 +1,4 @@
+control_id,control_name,control_area,description,owner,jurisdiction
+CTRL-001,KYC Periodic Review,KYC,Control checks customer review frequency,Compliance Team,EU
+CTRL-002,Transaction Monitoring,Monitoring,Control monitors suspicious transactions,AML Team,EU
+CTRL-003,Audit Evidence Retention,Audit,Control checks audit evidence retention,Audit Team,EU

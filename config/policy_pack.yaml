@@ -1,0 +1,37 @@
+# IRCMS Policy Pack
+# This file contains configurable rules for risk scoring, review routing, and compliance thresholds.
+
+confidence_thresholds:
+  auto_accept: 0.90
+  legal_review: 0.75
+  manual_review: 0.60
+
+risk_rules:
+  high_risk_deadline_days: 30
+  medium_risk_deadline_days: 90
+  high_risk_keywords:
+    - penalty
+    - fine
+    - sanction
+    - license
+    - mandatory
+    - must
+  medium_risk_keywords:
+    - should
+    - review
+    - update
+    - recommended
+
+jurisdiction_rules:
+  EU:
+    privacy_required: true
+    approval_required_for_high_risk: true
+  US:
+    privacy_required: false
+    approval_required_for_high_risk: true
+
+exception_routing:
+  low_confidence: Legal Review
+  high_risk: Compliance Lead Escalation
+  missing_control: Control Owner Review
+  policy_gap: Policy Owner Remediation

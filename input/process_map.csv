@@ -1,0 +1,4 @@
+process_id,process_name,system,business_unit,owner
+PR-001,Customer Due Diligence,KYC Platform,Risk Operations,Compliance Team
+PR-002,Transaction Monitoring,AML Monitoring System,Financial Crime,AML Team
+PR-003,Audit Evidence Management,Document Management System,Internal Audit,Audit Team

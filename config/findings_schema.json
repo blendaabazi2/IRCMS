@@ -1,0 +1,17 @@
+{
+  "finding_id": "FND-001",
+  "change_id": "CHG-001",
+  "gap_id": "GAP-001",
+  "requirement": "Regulatory requirement text",
+  "jurisdiction": "EU",
+  "severity": "High",
+  "confidence": 0.91,
+  "evidence": ["EV-001"],
+  "current_policy": "Existing policy text",
+  "required_policy": "Required policy text",
+  "matched_control_id": "CTRL-001",
+  "recommended_action": "Update policy",
+  "human_review_required": true,
+  "owner": "Compliance Team",
+  "deadline": "2026-08-01"
+}

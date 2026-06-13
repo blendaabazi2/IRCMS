@@ -1,0 +1,13 @@
+Regulatory Publication: Customer Due Diligence Update
+Jurisdiction: EU
+Regulator: Example Financial Authority
+Effective Date: 2026-09-01
+
+Section 4.2 - KYC Review Frequency
+Financial institutions must perform KYC customer reviews every 12 months for high-risk customers.
+
+Section 5.1 - Suspicious Activity Monitoring
+Institutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.
+
+Section 6.3 - Evidence Retention
+Compliance teams must retain evidence and audit logs for at least 5 years.

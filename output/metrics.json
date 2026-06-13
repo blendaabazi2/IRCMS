@@ -1,0 +1,13 @@
+{
+  "total_changes": 3,
+  "total_gaps": 3,
+  "gap_rate": 1.0,
+  "high_risk_gaps": 3,
+  "average_extraction_confidence": 0.95,
+  "matched_controls": 3,
+  "new_controls_required": 0,
+  "audit_steps_logged": 6,
+  "traceability_enabled": true,
+  "deterministic_rerun_ready": true,
+  "generated_at": "2026-06-13T20:48:24.117265Z"
+}

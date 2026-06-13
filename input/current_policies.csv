@@ -1,0 +1,4 @@
+policy_id,policy_area,current_policy,owner,jurisdiction
+POL-001,KYC,KYC review for high-risk customers is performed every 24 months,Compliance Team,EU
+POL-002,Monitoring,Suspicious transactions are reviewed weekly,AML Team,EU
+POL-003,Audit,Evidence and audit logs are retained for 3 years,Audit Team,EU

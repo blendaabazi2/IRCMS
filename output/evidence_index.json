@@ -1,0 +1,23 @@
+[
+  {
+    "evidence_id": "EV-001",
+    "source_section": "Section 4.2 - KYC Review Frequency",
+    "source_file": "input/regulation.txt",
+    "text_excerpt": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
+    "content_hash": "f729cf9b5f2b"
+  },
+  {
+    "evidence_id": "EV-002",
+    "source_section": "Section 5.1 - Suspicious Activity Monitoring",
+    "source_file": "input/regulation.txt",
+    "text_excerpt": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
+    "content_hash": "f3599cfbdf4b"
+  },
+  {
+    "evidence_id": "EV-003",
+    "source_section": "Section 6.3 - Evidence Retention",
+    "source_file": "input/regulation.txt",
+    "text_excerpt": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
+    "content_hash": "d2203d236fc7"
+  }
+]

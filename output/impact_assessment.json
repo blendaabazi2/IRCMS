@@ -1,0 +1,35 @@
+[
+  {
+    "impact_id": "IMP-001",
+    "gap_id": "GAP-001",
+    "change_id": "CHG-001",
+    "affected_process": "Unknown",
+    "affected_system": "Unknown",
+    "business_unit": "Unknown",
+    "risk_score": 90,
+    "priority": "Critical",
+    "remediation_complexity": "High"
+  },
+  {
+    "impact_id": "IMP-002",
+    "gap_id": "GAP-002",
+    "change_id": "CHG-002",
+    "affected_process": "Transaction Monitoring",
+    "affected_system": "AML Monitoring System",
+    "business_unit": "Financial Crime",
+    "risk_score": 90,
+    "priority": "Critical",
+    "remediation_complexity": "High"
+  },
+  {
+    "impact_id": "IMP-003",
+    "gap_id": "GAP-003",
+    "change_id": "CHG-003",
+    "affected_process": "Audit Evidence Management",
+    "affected_system": "Document Management System",
+    "business_unit": "Internal Audit",
+    "risk_score": 90,
+    "priority": "Critical",
+    "remediation_complexity": "High"
+  }
+]

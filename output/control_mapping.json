@@ -1,0 +1,38 @@
+[
+  {
+    "mapping_id": "MAP-001",
+    "gap_id": "GAP-001",
+    "change_id": "CHG-001",
+    "control_id": "CTRL-001",
+    "control_name": "KYC Periodic Review",
+    "mapping_status": "Existing control mapped",
+    "cross_jurisdiction_overlap": false,
+    "owner": "Compliance Team",
+    "evidence_id": "EV-001",
+    "recommendation": "Update existing control to meet new regulatory requirement"
+  },
+  {
+    "mapping_id": "MAP-002",
+    "gap_id": "GAP-002",
+    "change_id": "CHG-002",
+    "control_id": "CTRL-002",
+    "control_name": "Transaction Monitoring",
+    "mapping_status": "Existing control mapped",
+    "cross_jurisdiction_overlap": false,
+    "owner": "AML Team",
+    "evidence_id": "EV-002",
+    "recommendation": "Update existing control to meet new regulatory requirement"
+  },
+  {
+    "mapping_id": "MAP-003",
+    "gap_id": "GAP-003",
+    "change_id": "CHG-003",
+    "control_id": "CTRL-003",
+    "control_name": "Audit Evidence Retention",
+    "mapping_status": "Existing control mapped",
+    "cross_jurisdiction_overlap": false,
+    "owner": "Audit Team",
+    "evidence_id": "EV-003",
+    "recommendation": "Update existing control to meet new regulatory requirement"
+  }
+]
