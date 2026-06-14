@@ -1,0 +1,189 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GapAnalysisReport",
+  "description": "Output of Agent C - Gap Analysis. Root object wrapping all gap findings for one regulation run.",
+  "type": "object",
+  "required": ["run_id", "generated_at", "regulation_source", "jurisdiction", "total_gaps", "gap_summary", "gaps"],
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Matches context_packet_id from Agent A output (e.g. CTX-001)",
+      "example": "CTX-001"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC timestamp of when Agent C produced this file"
+    },
+    "regulation_source": {
+      "type": "string",
+      "description": "Relative path to the source regulation file"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Jurisdiction inherited from context_packet (e.g. EU, US, UK)"
+    },
+    "total_gaps": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "gap_summary": {
+      "type": "object",
+      "description": "Counts by severity and by status for quick dashboard display",
+      "properties": {
+        "Critical":       { "type": "integer" },
+        "High":           { "type": "integer" },
+        "Medium":         { "type": "integer" },
+        "Low":            { "type": "integer" },
+        "Non-compliant":  { "type": "integer" },
+        "Partial":        { "type": "integer" },
+        "Needs Review":   { "type": "integer" },
+        "Compliant":      { "type": "integer" }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/GapFinding"
+      }
+    }
+  },
+  "definitions": {
+    "GapFinding": {
+      "type": "object",
+      "required": [
+        "gap_id", "change_id", "policy_area",
+        "gap_status", "severity", "confidence", "gap_description",
+        "current_policy", "required_change",
+        "evidence", "remediation", "human_oversight", "metadata"
+      ],
+      "properties": {
+        "gap_id": {
+          "type": "string",
+          "pattern": "^GAP-\\d{3}$",
+          "description": "Unique gap identifier, e.g. GAP-001"
+        },
+        "change_id": {
+          "type": "string",
+          "pattern": "^CHG-\\d{3}$",
+          "description": "Foreign key to change_register.json"
+        },
+        "policy_area": {
+          "type": "string",
+          "enum": ["KYC", "Monitoring", "Audit", "General"],
+          "description": "Compliance domain this gap belongs to"
+        },
+        "gap_status": {
+          "type": "string",
+          "enum": ["Non-compliant", "Partial", "Needs Review", "Compliant"],
+          "description": "Non-compliant = direct conflict; Partial = some coverage; Needs Review = ambiguous; Compliant = no gap"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["Critical", "High", "Medium", "Low"],
+          "description": "Risk severity if gap is not closed before effective_date"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Claude's confidence in the gap assessment (not extraction confidence)"
+        },
+        "gap_description": {
+          "type": "string",
+          "description": "Plain-language explanation of exactly what is missing or misaligned"
+        },
+        "current_policy": {
+          "$ref": "#/definitions/CurrentPolicyRef"
+        },
+        "required_change": {
+          "$ref": "#/definitions/RequiredChange"
+        },
+        "evidence": {
+          "$ref": "#/definitions/EvidencePointer"
+        },
+        "remediation": {
+          "$ref": "#/definitions/RemediationPlan"
+        },
+        "human_oversight": {
+          "$ref": "#/definitions/HumanOversight"
+        },
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "analyzed_by":      { "type": "string" },
+            "analyzed_at":      { "type": "string", "format": "date-time" },
+            "model":            { "type": "string" }
+          }
+        }
+      }
+    },
+    "CurrentPolicyRef": {
+      "type": "object",
+      "required": ["policy_id", "text", "owner", "jurisdiction"],
+      "properties": {
+        "policy_id":    { "type": "string", "description": "e.g. POL-001" },
+        "text":         { "type": "string", "description": "Full current policy text" },
+        "owner":        { "type": "string", "description": "Team responsible for this policy" },
+        "jurisdiction": { "type": "string" }
+      }
+    },
+    "RequiredChange": {
+      "type": "object",
+      "required": ["requirement_text", "source_section", "effective_date", "jurisdiction"],
+      "properties": {
+        "requirement_text": { "type": "string" },
+        "source_section":   { "type": "string" },
+        "effective_date":   { "type": "string", "format": "date" },
+        "jurisdiction":     { "type": "string" }
+      }
+    },
+    "EvidencePointer": {
+      "description": "Mandatory traceable evidence — every finding must link back to a source paragraph. Auditors use source_quote to verify without re-reading the full document.",
+      "type": "object",
+      "required": ["evidence_id", "source_section", "source_file", "source_quote"],
+      "properties": {
+        "evidence_id":    { "type": "string", "description": "Foreign key to evidence_index.json (e.g. EV-001)" },
+        "source_section": { "type": "string" },
+        "source_file":    { "type": "string", "description": "Relative path to original regulation file" },
+        "source_quote":   { "type": "string", "description": "Verbatim excerpt from the regulation — the exact text that triggered this finding" },
+        "content_hash":   { "type": "string", "description": "SHA-256 prefix of source_quote for tamper detection" }
+      }
+    },
+    "RemediationPlan": {
+      "type": "object",
+      "required": ["recommended_action", "effort_estimate", "suggested_owner", "target_deadline"],
+      "properties": {
+        "recommended_action": { "type": "string", "description": "Concrete step to close the gap (fed into remediation_plan.md by Agent H)" },
+        "effort_estimate":    { "type": "string", "enum": ["Low", "Medium", "High"] },
+        "suggested_owner":    { "type": "string", "description": "Team or role best placed to execute" },
+        "target_deadline":    { "type": "string", "format": "date", "description": "30 days before effective_date — hard implementation target" }
+      }
+    },
+    "HumanOversight": {
+      "description": "Flags findings that require human SME review before remediation. open_questions are routed to legal/compliance for interpretation.",
+      "type": "object",
+      "required": ["review_required"],
+      "properties": {
+        "review_required": {
+          "type": "boolean",
+          "description": "true whenever confidence < 0.80 or regulatory language is ambiguous"
+        },
+        "review_reason": {
+          "type": "string",
+          "description": "One sentence explaining why a human must review this finding"
+        },
+        "open_questions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Legal/regulatory questions that need SME input before remediation can proceed"
+        },
+        "flagged_ambiguities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Exact phrases from the regulation text that are vague or open to interpretation"
+        }
+      }
+    }
+  }
+}

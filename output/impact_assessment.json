@@ -1,35 +1,132 @@
-[
-  {
-    "impact_id": "IMP-001",
-    "gap_id": "GAP-001",
-    "change_id": "CHG-001",
-    "affected_process": "Unknown",
-    "affected_system": "Unknown",
-    "business_unit": "Unknown",
-    "risk_score": 90,
-    "priority": "Critical",
-    "remediation_complexity": "High"
+{
+  "run_id": "CTX-001",
+  "generated_at": "2026-06-14T14:19:29.856640Z",
+  "regulation_source": "input/regulation.txt",
+  "jurisdiction": "EU",
+  "total_assessments": 3,
+  "priority_summary": {
+    "Critical": 0,
+    "High": 3,
+    "Medium": 0,
+    "Low": 0
   },
-  {
-    "impact_id": "IMP-002",
-    "gap_id": "GAP-002",
-    "change_id": "CHG-002",
-    "affected_process": "Transaction Monitoring",
-    "affected_system": "AML Monitoring System",
-    "business_unit": "Financial Crime",
-    "risk_score": 90,
-    "priority": "Critical",
-    "remediation_complexity": "High"
+  "deadline_risk_summary": {
+    "Critical": 0,
+    "High": 0,
+    "Medium": 3,
+    "Low": 0
   },
-  {
-    "impact_id": "IMP-003",
-    "gap_id": "GAP-003",
-    "change_id": "CHG-003",
-    "affected_process": "Audit Evidence Management",
-    "affected_system": "Document Management System",
-    "business_unit": "Internal Audit",
-    "risk_score": 90,
-    "priority": "Critical",
-    "remediation_complexity": "High"
-  }
-]
+  "assessments": [
+    {
+      "impact_id": "IMP-001",
+      "gap_id": "GAP-001",
+      "change_id": "CHG-001",
+      "policy_area": "KYC",
+      "system_impact_score": 4,
+      "regulatory_risk_score": 75,
+      "remediation_complexity": "Medium",
+      "deadline_risk": "Medium",
+      "affected_processes": [
+        {
+          "process_id": "PR-001",
+          "process_name": "Customer Due Diligence",
+          "system": "KYC Platform",
+          "business_unit": "Risk Operations",
+          "owner": "Compliance Team"
+        }
+      ],
+      "business_units_affected": [
+        "Risk Operations"
+      ],
+      "headcount_affected": 25,
+      "dependency_systems": [
+        "KYC Platform"
+      ],
+      "priority": "High",
+      "impact_summary": "The KYC gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 78 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "human_review_required": true,
+      "escalation_required": false,
+      "metadata": {
+        "analyzed_by": "agent_d_impact_assessment",
+        "analyzed_at": "2026-06-14T14:19:29.371165Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback",
+        "days_to_deadline": 78
+      }
+    },
+    {
+      "impact_id": "IMP-002",
+      "gap_id": "GAP-002",
+      "change_id": "CHG-002",
+      "policy_area": "Monitoring",
+      "system_impact_score": 4,
+      "regulatory_risk_score": 75,
+      "remediation_complexity": "High",
+      "deadline_risk": "Medium",
+      "affected_processes": [
+        {
+          "process_id": "PR-002",
+          "process_name": "Transaction Monitoring",
+          "system": "AML Monitoring System",
+          "business_unit": "Financial Crime",
+          "owner": "AML Team"
+        }
+      ],
+      "business_units_affected": [
+        "Financial Crime"
+      ],
+      "headcount_affected": 25,
+      "dependency_systems": [
+        "AML Monitoring System"
+      ],
+      "priority": "High",
+      "impact_summary": "The Monitoring gap (GAP-002) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 78 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "human_review_required": true,
+      "escalation_required": false,
+      "metadata": {
+        "analyzed_by": "agent_d_impact_assessment",
+        "analyzed_at": "2026-06-14T14:19:29.610155Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback",
+        "days_to_deadline": 78
+      }
+    },
+    {
+      "impact_id": "IMP-003",
+      "gap_id": "GAP-003",
+      "change_id": "CHG-003",
+      "policy_area": "Audit",
+      "system_impact_score": 4,
+      "regulatory_risk_score": 75,
+      "remediation_complexity": "Medium",
+      "deadline_risk": "Medium",
+      "affected_processes": [
+        {
+          "process_id": "PR-003",
+          "process_name": "Audit Evidence Management",
+          "system": "Document Management System",
+          "business_unit": "Internal Audit",
+          "owner": "Audit Team"
+        }
+      ],
+      "business_units_affected": [
+        "Internal Audit"
+      ],
+      "headcount_affected": 25,
+      "dependency_systems": [
+        "Document Management System"
+      ],
+      "priority": "High",
+      "impact_summary": "The Audit gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 78 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "human_review_required": true,
+      "escalation_required": false,
+      "metadata": {
+        "analyzed_by": "agent_d_impact_assessment",
+        "analyzed_at": "2026-06-14T14:19:29.856552Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback",
+        "days_to_deadline": 78
+      }
+    }
+  ]
+}

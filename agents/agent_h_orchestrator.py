@@ -20,44 +20,72 @@ def categorize_exception(gap, impact, mapping):
     return "Policy Owner Remediation"
 
 
+def _gap_field(gap: dict, *keys, default="Unknown") -> str:
+    """Walk a chain of keys through nested dicts, falling back to flat keys for backwards compat."""
+    obj = gap
+    for k in keys:
+        if not isinstance(obj, dict):
+            return default
+        obj = obj.get(k)
+        if obj is None:
+            # try the last key directly on the original gap (old flat format)
+            return gap.get(keys[-1], default)
+    return str(obj) if obj is not None else default
+
+
+def _impact_system(impact: dict) -> str:
+    """Support both old flat affected_system and new nested affected_processes[0].system."""
+    procs = impact.get("affected_processes", [])
+    if procs and isinstance(procs[0], dict):
+        return procs[0].get("system", "Unknown")
+    return impact.get("affected_system", "Unknown")
+
+
 def generate_remediation_plan(gaps, impacts, mappings) -> str:
-    impact_by_gap = {item["gap_id"]: item for item in impacts}
+    impact_by_gap  = {item["gap_id"]: item for item in impacts}
     mapping_by_gap = {item["gap_id"]: item for item in mappings}
 
     lines = ["# Remediation Plan", ""]
     for gap in gaps:
-        impact = impact_by_gap.get(gap["gap_id"], {})
+        impact  = impact_by_gap.get(gap["gap_id"], {})
         mapping = mapping_by_gap.get(gap["gap_id"], {})
+
+        required_policy = _gap_field(gap, "required_change", "requirement_text", default=_gap_field(gap, "required_policy"))
+        current_policy  = _gap_field(gap, "current_policy",  "text",             default=_gap_field(gap, "current_policy"))
+        owner           = _gap_field(gap, "current_policy",  "owner",            default=gap.get("owner", "Unknown"))
+        deadline        = _gap_field(gap, "remediation", "target_deadline",      default=date.today().isoformat())
+
         lines.extend([
             f"## {gap['gap_id']} - {gap['policy_area']}",
             f"- Status: {gap['gap_status']}",
             f"- Severity: {gap['severity']}",
-            f"- Required Policy: {gap['required_policy']}",
-            f"- Current Policy: {gap['current_policy']}",
-            f"- Affected System: {impact.get('affected_system', 'Unknown')}",
+            f"- Required Policy: {required_policy}",
+            f"- Current Policy: {current_policy}",
+            f"- Affected System: {_impact_system(impact)}",
             f"- Priority: {impact.get('priority', 'Unknown')}",
             f"- Control Action: {mapping.get('recommendation', 'Review required')}",
-            f"- Owner: {gap.get('owner', 'Unknown')}",
-            f"- Target Deadline: {date.today().isoformat()}",
+            f"- Owner: {owner}",
+            f"- Target Deadline: {deadline}",
             ""
         ])
     return "\n".join(lines)
 
 
 def generate_exceptions(gaps, impacts, mappings) -> str:
-    impact_by_gap = {item["gap_id"]: item for item in impacts}
+    impact_by_gap  = {item["gap_id"]: item for item in impacts}
     mapping_by_gap = {item["gap_id"]: item for item in mappings}
 
     lines = ["# Exceptions", ""]
     for gap in gaps:
-        impact = impact_by_gap.get(gap["gap_id"], {})
+        impact  = impact_by_gap.get(gap["gap_id"], {})
         mapping = mapping_by_gap.get(gap["gap_id"], {})
-        route = categorize_exception(gap, impact, mapping)
+        route   = categorize_exception(gap, impact, mapping)
+        evidence_id = _gap_field(gap, "evidence", "evidence_id", default=gap.get("evidence_id", "N/A"))
         lines.extend([
             f"## Exception for {gap['gap_id']}",
             f"- Route: {route}",
             f"- Severity: {gap['severity']}",
-            f"- Evidence: {gap.get('evidence_id')}",
+            f"- Evidence: {evidence_id}",
             ""
         ])
     return "\n".join(lines)
@@ -86,11 +114,18 @@ def generate_metrics(changes, gaps, mappings):
     }
 
 
+def _as_list(raw, list_key: str) -> list:
+    """Return the list payload from either a bare list or a {list_key: [...]} dict."""
+    if isinstance(raw, list):
+        return raw
+    return raw.get(list_key, [])
+
+
 def run():
     context = read_json(OUTPUT_DIR / "context_packet.json", default={})
     changes = read_json(OUTPUT_DIR / "change_register.json", default=[])
-    gaps = read_json(OUTPUT_DIR / "gap_analysis.json", default=[])
-    impacts = read_json(OUTPUT_DIR / "impact_assessment.json", default=[])
+    gaps    = _as_list(read_json(OUTPUT_DIR / "gap_analysis.json",    default=[]), "gaps")
+    impacts = _as_list(read_json(OUTPUT_DIR / "impact_assessment.json", default=[]), "assessments")
     mappings = read_json(OUTPUT_DIR / "control_mapping.json", default=[])
 
     remediation_plan = generate_remediation_plan(gaps, impacts, mappings)
@@ -100,7 +135,7 @@ def run():
     approval_packet = {
         "project": "IRCMS",
         "document": context.get("metadata", {}).get("document_title", "Unknown"),
-        "summary": f"{len(changes)} regulatory changes detected, {len(gaps)} gaps identified.",
+        "summary": f"{len(changes)} regulatory changes detected, {len(gaps)} compliance gaps identified.",
         "high_risk_gaps": metrics["high_risk_gaps"],
         "approval_required": metrics["high_risk_gaps"] > 0,
         "recommended_action": "Approve remediation plan and assign owners",

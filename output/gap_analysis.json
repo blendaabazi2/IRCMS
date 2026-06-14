@@ -1,35 +1,157 @@
-[
-  {
-    "gap_id": "GAP-001",
-    "change_id": "CHG-001",
-    "policy_area": "KYC",
-    "current_policy": "KYC review for high-risk customers is performed every 24 months",
-    "required_policy": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
-    "gap_status": "Non-compliant",
-    "severity": "High",
-    "owner": "Compliance Team",
-    "evidence_id": "EV-001"
+{
+  "run_id": "CTX-001",
+  "generated_at": "2026-06-14T14:19:27.534470Z",
+  "regulation_source": "input/regulation.txt",
+  "jurisdiction": "EU",
+  "total_gaps": 3,
+  "gap_summary": {
+    "Critical": 0,
+    "High": 3,
+    "Medium": 0,
+    "Low": 0,
+    "Non-compliant": 3,
+    "Partial": 0,
+    "Needs Review": 0,
+    "Compliant": 0
   },
-  {
-    "gap_id": "GAP-002",
-    "change_id": "CHG-002",
-    "policy_area": "Monitoring",
-    "current_policy": "Suspicious transactions are reviewed weekly",
-    "required_policy": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
-    "gap_status": "Non-compliant",
-    "severity": "High",
-    "owner": "AML Team",
-    "evidence_id": "EV-002"
-  },
-  {
-    "gap_id": "GAP-003",
-    "change_id": "CHG-003",
-    "policy_area": "Audit",
-    "current_policy": "Evidence and audit logs are retained for 3 years",
-    "required_policy": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
-    "gap_status": "Non-compliant",
-    "severity": "High",
-    "owner": "Audit Team",
-    "evidence_id": "EV-003"
-  }
-]
+  "gaps": [
+    {
+      "gap_id": "GAP-001",
+      "change_id": "CHG-001",
+      "policy_area": "KYC",
+      "gap_status": "Non-compliant",
+      "severity": "High",
+      "confidence": 0.7,
+      "gap_description": "Time-period mismatch: regulation requires 12 but current policy specifies 24.",
+      "current_policy": {
+        "policy_id": "POL-001",
+        "text": "KYC review for high-risk customers is performed every 24 months",
+        "owner": "Compliance Team",
+        "jurisdiction": "EU"
+      },
+      "required_change": {
+        "requirement_text": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
+        "source_section": "Section 4.2 - KYC Review Frequency",
+        "effective_date": "2026-09-01",
+        "jurisdiction": "EU"
+      },
+      "evidence": {
+        "evidence_id": "EV-001",
+        "source_section": "Section 4.2 - KYC Review Frequency",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
+        "content_hash": "f729cf9b5f2b"
+      },
+      "remediation": {
+        "recommended_action": "Update 'POL-001' to change the retention/review period from 24 to 12 as required by Section 4.2 - KYC Review Frequency.",
+        "effort_estimate": "Medium",
+        "suggested_owner": "Compliance Team",
+        "target_deadline": "2026-08-02"
+      },
+      "human_oversight": {
+        "review_required": false,
+        "review_reason": "",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "metadata": {
+        "analyzed_by": "agent_c_gap_analysis",
+        "analyzed_at": "2026-06-14T14:19:26.977516Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "gap_id": "GAP-002",
+      "change_id": "CHG-002",
+      "policy_area": "Monitoring",
+      "gap_status": "Non-compliant",
+      "severity": "High",
+      "confidence": 0.7,
+      "gap_description": "Frequency mismatch: regulation requires daily action but current policy only specifies weekly.",
+      "current_policy": {
+        "policy_id": "POL-002",
+        "text": "Suspicious transactions are reviewed weekly",
+        "owner": "AML Team",
+        "jurisdiction": "EU"
+      },
+      "required_change": {
+        "requirement_text": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
+        "source_section": "Section 5.1 - Suspicious Activity Monitoring",
+        "effective_date": "2026-09-01",
+        "jurisdiction": "EU"
+      },
+      "evidence": {
+        "evidence_id": "EV-002",
+        "source_section": "Section 5.1 - Suspicious Activity Monitoring",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
+        "content_hash": "f3599cfbdf4b"
+      },
+      "remediation": {
+        "recommended_action": "Update 'POL-002' and supporting systems to increase monitoring frequency from weekly to daily.",
+        "effort_estimate": "High",
+        "suggested_owner": "AML Team",
+        "target_deadline": "2026-08-02"
+      },
+      "human_oversight": {
+        "review_required": true,
+        "review_reason": "Frequency increase may require system or workflow changes; human sign-off needed.",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "metadata": {
+        "analyzed_by": "agent_c_gap_analysis",
+        "analyzed_at": "2026-06-14T14:19:27.277050Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "gap_id": "GAP-003",
+      "change_id": "CHG-003",
+      "policy_area": "Audit",
+      "gap_status": "Non-compliant",
+      "severity": "High",
+      "confidence": 0.7,
+      "gap_description": "Time-period mismatch: regulation requires 5 but current policy specifies 3.",
+      "current_policy": {
+        "policy_id": "POL-003",
+        "text": "Evidence and audit logs are retained for 3 years",
+        "owner": "Audit Team",
+        "jurisdiction": "EU"
+      },
+      "required_change": {
+        "requirement_text": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
+        "source_section": "Section 6.3 - Evidence Retention",
+        "effective_date": "2026-09-01",
+        "jurisdiction": "EU"
+      },
+      "evidence": {
+        "evidence_id": "EV-003",
+        "source_section": "Section 6.3 - Evidence Retention",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
+        "content_hash": "d2203d236fc7"
+      },
+      "remediation": {
+        "recommended_action": "Update 'POL-003' to change the retention/review period from 3 to 5 as required by Section 6.3 - Evidence Retention.",
+        "effort_estimate": "Medium",
+        "suggested_owner": "Audit Team",
+        "target_deadline": "2026-08-02"
+      },
+      "human_oversight": {
+        "review_required": false,
+        "review_reason": "",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "metadata": {
+        "analyzed_by": "agent_c_gap_analysis",
+        "analyzed_at": "2026-06-14T14:19:27.534423Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    }
+  ]
+}
