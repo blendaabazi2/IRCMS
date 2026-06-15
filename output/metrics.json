@@ -1,13 +1,14 @@
 {
-  "total_changes": 3,
-  "total_gaps": 3,
+  "total_changes": 5,
+  "total_gaps": 5,
   "gap_rate": 1.0,
   "high_risk_gaps": 3,
   "average_extraction_confidence": 0.95,
-  "matched_controls": 3,
-  "new_controls_required": 0,
+  "matched_controls": 2,
+  "new_controls_required": 3,
+  "cross_jurisdiction_overlaps": 0,
   "audit_steps_logged": 6,
   "traceability_enabled": true,
   "deterministic_rerun_ready": true,
-  "generated_at": "2026-06-15T11:43:46.717085Z"
+  "generated_at": "2026-06-15T20:52:23.933911Z"
 }

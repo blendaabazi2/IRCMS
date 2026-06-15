@@ -1,31 +1,51 @@
 [
   {
     "change_id": "CHG-001",
-    "requirement": "Financial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
+    "requirement": "Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding.",
     "jurisdiction": "EU",
-    "effective_date": "2026-09-01",
-    "source_section": "Section 4.2 - KYC Review Frequency",
+    "effective_date": "2026-07-01",
+    "source_section": "Section 2.1 - Enhanced Due Diligence for High-Risk Clients",
     "evidence_id": "EV-001",
     "confidence": 0.95,
     "extraction_method": "rule_based_demo"
   },
   {
     "change_id": "CHG-002",
-    "requirement": "Institutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
+    "requirement": "Institutions must implement real-time transaction monitoring systems capable of flagging suspicious activity within 60 seconds.",
     "jurisdiction": "EU",
-    "effective_date": "2026-09-01",
-    "source_section": "Section 5.1 - Suspicious Activity Monitoring",
+    "effective_date": "2026-07-01",
+    "source_section": "Section 3.4 - Real-Time Transaction Monitoring",
     "evidence_id": "EV-002",
     "confidence": 0.95,
     "extraction_method": "rule_based_demo"
   },
   {
     "change_id": "CHG-003",
-    "requirement": "Compliance teams must retain evidence and audit logs for at least 5 years.",
+    "requirement": "Institutions must verify and record beneficial ownership for all corporate clients within 14 days.",
     "jurisdiction": "EU",
-    "effective_date": "2026-09-01",
-    "source_section": "Section 6.3 - Evidence Retention",
+    "effective_date": "2026-07-01",
+    "source_section": "Section 4.7 - Beneficial Ownership Verification",
     "evidence_id": "EV-003",
+    "confidence": 0.95,
+    "extraction_method": "rule_based_demo"
+  },
+  {
+    "change_id": "CHG-004",
+    "requirement": "Compliance teams must file suspicious activity reports within 24 hours of detection.",
+    "jurisdiction": "EU",
+    "effective_date": "2026-07-01",
+    "source_section": "Section 5.2 - Suspicious Activity Reporting",
+    "evidence_id": "EV-004",
+    "confidence": 0.95,
+    "extraction_method": "rule_based_demo"
+  },
+  {
+    "change_id": "CHG-005",
+    "requirement": "All compliance staff must complete AML certification training every 6 months.",
+    "jurisdiction": "EU",
+    "effective_date": "2026-07-01",
+    "source_section": "Section 6.1 - Staff Training and Certification",
+    "evidence_id": "EV-005",
     "confidence": 0.95,
     "extraction_method": "rule_based_demo"
   }

@@ -206,7 +206,33 @@ else:
 
 st.subheader("Control Mapping (Agent E)")
 if mappings:
-    st.dataframe(pd.DataFrame(mappings), use_container_width=True)
+    # Flatten nested fields for display
+    flat_mappings = []
+    for m in mappings:
+        flat_mappings.append({
+            "mapping_id":                 m.get("mapping_id", ""),
+            "gap_id":                     m.get("gap_id", ""),
+            "change_id":                  m.get("change_id", ""),
+            "control_id":                 m.get("control_id", ""),
+            "control_name":               m.get("control_name", ""),
+            "mapping_status":             m.get("mapping_status", ""),
+            "owner":                      m.get("owner", ""),
+            "effort_estimate":            m.get("effort_estimate", ""),
+            "evidence_requirements":      ", ".join(m.get("evidence_requirements", [])),
+            "cross_jurisdiction_overlap": m.get("cross_jurisdiction_overlap", False),
+            "jurisdictions_affected":     ", ".join(m.get("jurisdictions_affected", [])) or "—",
+            "overlap_note":               m.get("overlap_note", ""),
+            "recommendation":             m.get("recommendation", ""),
+        })
+    st.dataframe(pd.DataFrame(flat_mappings), use_container_width=True)
+
+    col_e1, col_e2, col_e3 = st.columns(3)
+    col_e1.metric("Existing Controls Mapped",
+                  sum(1 for m in mappings if m.get("mapping_status") == "Existing control mapped"))
+    col_e2.metric("New Controls Required",
+                  sum(1 for m in mappings if m.get("mapping_status") == "New control required"))
+    col_e3.metric("Cross-Jurisdiction Overlaps",
+                  sum(1 for m in mappings if m.get("cross_jurisdiction_overlap")))
 else:
     st.info("No control mapping generated yet.")
 

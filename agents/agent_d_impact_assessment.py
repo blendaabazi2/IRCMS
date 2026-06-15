@@ -277,7 +277,7 @@ def _call_claude(
     except (
         anthropic.BadRequestError, anthropic.AuthenticationError,
         anthropic.PermissionDeniedError, anthropic.APIConnectionError,
-        anthropic.RateLimitError,
+        anthropic.RateLimitError, TypeError, ValueError,
     ) as exc:
         print(f"[agent_d] Claude unavailable ({type(exc).__name__}). Using rule-based fallback.")
         return _rule_based_impact(gap, process, days)

@@ -1,19 +1,19 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-15T11:43:46.670643Z",
+  "generated_at": "2026-06-15T20:52:23.892025Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
-  "total_assessments": 3,
+  "total_assessments": 5,
   "priority_summary": {
-    "Critical": 0,
-    "High": 3,
+    "Critical": 5,
+    "High": 0,
     "Medium": 0,
     "Low": 0
   },
   "deadline_risk_summary": {
-    "Critical": 0,
+    "Critical": 5,
     "High": 0,
-    "Medium": 3,
+    "Medium": 0,
     "Low": 0
   },
   "assessments": [
@@ -21,37 +21,27 @@
       "impact_id": "IMP-001",
       "gap_id": "GAP-001",
       "change_id": "CHG-001",
-      "policy_area": "KYC",
+      "policy_area": "General",
       "system_impact_score": 4,
       "regulatory_risk_score": 75,
-      "remediation_complexity": "Medium",
-      "deadline_risk": "Medium",
-      "affected_processes": [
-        {
-          "process_id": "PR-001",
-          "process_name": "Customer Due Diligence",
-          "system": "KYC Platform",
-          "business_unit": "Risk Operations",
-          "owner": "Compliance Team"
-        }
-      ],
+      "remediation_complexity": "High",
+      "deadline_risk": "Critical",
+      "affected_processes": [],
       "business_units_affected": [
-        "Risk Operations"
+        "Unknown"
       ],
       "headcount_affected": 25,
-      "dependency_systems": [
-        "KYC Platform"
-      ],
-      "priority": "High",
-      "impact_summary": "The KYC gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 77 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "dependency_systems": [],
+      "priority": "Critical",
+      "impact_summary": "The General gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 15 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
-      "escalation_required": false,
+      "escalation_required": true,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T11:43:46.665514Z",
+        "analyzed_at": "2026-06-15T20:52:23.886039Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 77
+        "days_to_deadline": 15
       }
     },
     {
@@ -59,10 +49,10 @@
       "gap_id": "GAP-002",
       "change_id": "CHG-002",
       "policy_area": "Monitoring",
-      "system_impact_score": 4,
-      "regulatory_risk_score": 75,
-      "remediation_complexity": "High",
-      "deadline_risk": "Medium",
+      "system_impact_score": 3,
+      "regulatory_risk_score": 50,
+      "remediation_complexity": "Low",
+      "deadline_risk": "Critical",
       "affected_processes": [
         {
           "process_id": "PR-002",
@@ -75,57 +65,111 @@
       "business_units_affected": [
         "Financial Crime"
       ],
-      "headcount_affected": 25,
+      "headcount_affected": 12,
       "dependency_systems": [
         "AML Monitoring System"
       ],
-      "priority": "High",
-      "impact_summary": "The Monitoring gap (GAP-002) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 77 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "priority": "Critical",
+      "impact_summary": "The Monitoring gap (GAP-002) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 15 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T11:43:46.668332Z",
+        "analyzed_at": "2026-06-15T20:52:23.888034Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 77
+        "days_to_deadline": 15
       }
     },
     {
       "impact_id": "IMP-003",
       "gap_id": "GAP-003",
       "change_id": "CHG-003",
-      "policy_area": "Audit",
+      "policy_area": "General",
       "system_impact_score": 4,
       "regulatory_risk_score": 75,
-      "remediation_complexity": "Medium",
-      "deadline_risk": "Medium",
+      "remediation_complexity": "High",
+      "deadline_risk": "Critical",
+      "affected_processes": [],
+      "business_units_affected": [
+        "Unknown"
+      ],
+      "headcount_affected": 25,
+      "dependency_systems": [],
+      "priority": "Critical",
+      "impact_summary": "The General gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 15 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "human_review_required": true,
+      "escalation_required": true,
+      "metadata": {
+        "analyzed_by": "agent_d_impact_assessment",
+        "analyzed_at": "2026-06-15T20:52:23.888034Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback",
+        "days_to_deadline": 15
+      }
+    },
+    {
+      "impact_id": "IMP-004",
+      "gap_id": "GAP-004",
+      "change_id": "CHG-004",
+      "policy_area": "Monitoring",
+      "system_impact_score": 3,
+      "regulatory_risk_score": 50,
+      "remediation_complexity": "Low",
+      "deadline_risk": "Critical",
       "affected_processes": [
         {
-          "process_id": "PR-003",
-          "process_name": "Audit Evidence Management",
-          "system": "Document Management System",
-          "business_unit": "Internal Audit",
-          "owner": "Audit Team"
+          "process_id": "PR-002",
+          "process_name": "Transaction Monitoring",
+          "system": "AML Monitoring System",
+          "business_unit": "Financial Crime",
+          "owner": "AML Team"
         }
       ],
       "business_units_affected": [
-        "Internal Audit"
+        "Financial Crime"
       ],
-      "headcount_affected": 25,
+      "headcount_affected": 12,
       "dependency_systems": [
-        "Document Management System"
+        "AML Monitoring System"
       ],
-      "priority": "High",
-      "impact_summary": "The Audit gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 77 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "priority": "Critical",
+      "impact_summary": "The Monitoring gap (GAP-004) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 15 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T11:43:46.670607Z",
+        "analyzed_at": "2026-06-15T20:52:23.890029Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 77
+        "days_to_deadline": 15
+      }
+    },
+    {
+      "impact_id": "IMP-005",
+      "gap_id": "GAP-005",
+      "change_id": "CHG-005",
+      "policy_area": "General",
+      "system_impact_score": 4,
+      "regulatory_risk_score": 75,
+      "remediation_complexity": "High",
+      "deadline_risk": "Critical",
+      "affected_processes": [],
+      "business_units_affected": [
+        "Unknown"
+      ],
+      "headcount_affected": 25,
+      "dependency_systems": [],
+      "priority": "Critical",
+      "impact_summary": "The General gap (GAP-005) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 15 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "human_review_required": true,
+      "escalation_required": true,
+      "metadata": {
+        "analyzed_by": "agent_d_impact_assessment",
+        "analyzed_at": "2026-06-15T20:52:23.892025Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback",
+        "days_to_deadline": 15
       }
     }
   ]

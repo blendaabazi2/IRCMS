@@ -1,62 +1,62 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-15T11:43:45.332936Z",
+  "generated_at": "2026-06-15T20:52:23.419287Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
-  "total_gaps": 3,
+  "total_gaps": 5,
   "gap_summary": {
     "Critical": 0,
     "High": 3,
-    "Medium": 0,
+    "Medium": 2,
     "Low": 0,
     "Non-compliant": 3,
     "Partial": 0,
-    "Needs Review": 0,
+    "Needs Review": 2,
     "Compliant": 0
   },
   "gaps": [
     {
       "gap_id": "GAP-001",
       "change_id": "CHG-001",
-      "policy_area": "KYC",
+      "policy_area": "General",
       "gap_status": "Non-compliant",
       "severity": "High",
       "confidence": 0.7,
-      "gap_description": "Time-period mismatch: regulation requires 12 but current policy specifies 24.",
+      "gap_description": "No internal policy exists for this regulatory requirement.",
       "current_policy": {
-        "policy_id": "POL-001",
-        "text": "KYC review for high-risk customers is performed every 24 months",
-        "owner": "Compliance Team",
+        "policy_id": "N/A",
+        "text": "No matching policy found",
+        "owner": "Unknown",
         "jurisdiction": "EU"
       },
       "required_change": {
-        "requirement_text": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
-        "source_section": "Section 4.2 - KYC Review Frequency",
-        "effective_date": "2026-09-01",
+        "requirement_text": "Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding.",
+        "source_section": "Section 2.1 - Enhanced Due Diligence for High-Risk Clients",
+        "effective_date": "2026-07-01",
         "jurisdiction": "EU"
       },
       "evidence": {
         "evidence_id": "EV-001",
-        "source_section": "Section 4.2 - KYC Review Frequency",
+        "source_section": "Section 2.1 - Enhanced Due Diligence for High-Risk Clients",
         "source_file": "input/regulation.txt",
-        "source_quote": "Section 4.2 - KYC Review Frequency\nFinancial institutions must perform KYC customer reviews every 12 months for high-risk customers.",
-        "content_hash": "f729cf9b5f2b"
+        "source_quote": "Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding. Failure to comply will result in penalties of up to EUR 10 million or 10% of annual turnover.",
+        "content_hash": "bbb37d24a0d3"
       },
       "remediation": {
-        "recommended_action": "Update 'POL-001' to change the retention/review period from 24 to 12 as required by Section 4.2 - KYC Review Frequency.",
-        "effort_estimate": "Medium",
-        "suggested_owner": "Compliance Team",
-        "target_deadline": "2026-08-02"
+        "recommended_action": "Draft a new policy to satisfy: Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding.",
+        "effort_estimate": "High",
+        "suggested_owner": "Unknown",
+        "target_deadline": "2026-06-01"
       },
       "human_oversight": {
-        "review_required": false,
-        "review_reason": "",
+        "review_required": true,
+        "review_reason": "No existing policy — legal drafting required before remediation can start.",
         "open_questions": [],
         "flagged_ambiguities": []
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T11:43:45.326531Z",
+        "analyzed_at": "2026-06-15T20:52:23.408316Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -65,10 +65,10 @@
       "gap_id": "GAP-002",
       "change_id": "CHG-002",
       "policy_area": "Monitoring",
-      "gap_status": "Non-compliant",
-      "severity": "High",
+      "gap_status": "Needs Review",
+      "severity": "Medium",
       "confidence": 0.7,
-      "gap_description": "Frequency mismatch: regulation requires daily action but current policy only specifies weekly.",
+      "gap_description": "Policy exists but semantic alignment with the requirement needs manual verification.",
       "current_policy": {
         "policy_id": "POL-002",
         "text": "Suspicious transactions are reviewed weekly",
@@ -76,33 +76,33 @@
         "jurisdiction": "EU"
       },
       "required_change": {
-        "requirement_text": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
-        "source_section": "Section 5.1 - Suspicious Activity Monitoring",
-        "effective_date": "2026-09-01",
+        "requirement_text": "Institutions must implement real-time transaction monitoring systems capable of flagging suspicious activity within 60 seconds.",
+        "source_section": "Section 3.4 - Real-Time Transaction Monitoring",
+        "effective_date": "2026-07-01",
         "jurisdiction": "EU"
       },
       "evidence": {
         "evidence_id": "EV-002",
-        "source_section": "Section 5.1 - Suspicious Activity Monitoring",
+        "source_section": "Section 3.4 - Real-Time Transaction Monitoring",
         "source_file": "input/regulation.txt",
-        "source_quote": "Section 5.1 - Suspicious Activity Monitoring\nInstitutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.",
-        "content_hash": "f3599cfbdf4b"
+        "source_quote": "Institutions must implement real-time transaction monitoring systems capable of flagging suspicious activity within 60 seconds. Non-compliance sanctions may reach EUR 5 million per breach.",
+        "content_hash": "7c05e56eac09"
       },
       "remediation": {
-        "recommended_action": "Update 'POL-002' and supporting systems to increase monitoring frequency from weekly to daily.",
-        "effort_estimate": "High",
+        "recommended_action": "Perform a manual policy review against the regulatory requirement text.",
+        "effort_estimate": "Low",
         "suggested_owner": "AML Team",
-        "target_deadline": "2026-08-02"
+        "target_deadline": "2026-06-01"
       },
       "human_oversight": {
         "review_required": true,
-        "review_reason": "Frequency increase may require system or workflow changes; human sign-off needed.",
+        "review_reason": "Rule-based fallback could not determine gap with confidence — human review required.",
         "open_questions": [],
         "flagged_ambiguities": []
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T11:43:45.330588Z",
+        "analyzed_at": "2026-06-15T20:52:23.414310Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -110,45 +110,137 @@
     {
       "gap_id": "GAP-003",
       "change_id": "CHG-003",
-      "policy_area": "Audit",
+      "policy_area": "General",
       "gap_status": "Non-compliant",
       "severity": "High",
       "confidence": 0.7,
-      "gap_description": "Time-period mismatch: regulation requires 5 but current policy specifies 3.",
+      "gap_description": "No internal policy exists for this regulatory requirement.",
       "current_policy": {
-        "policy_id": "POL-003",
-        "text": "Evidence and audit logs are retained for 3 years",
-        "owner": "Audit Team",
+        "policy_id": "N/A",
+        "text": "No matching policy found",
+        "owner": "Unknown",
         "jurisdiction": "EU"
       },
       "required_change": {
-        "requirement_text": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
-        "source_section": "Section 6.3 - Evidence Retention",
-        "effective_date": "2026-09-01",
+        "requirement_text": "Institutions must verify and record beneficial ownership for all corporate clients within 14 days.",
+        "source_section": "Section 4.7 - Beneficial Ownership Verification",
+        "effective_date": "2026-07-01",
         "jurisdiction": "EU"
       },
       "evidence": {
         "evidence_id": "EV-003",
-        "source_section": "Section 6.3 - Evidence Retention",
+        "source_section": "Section 4.7 - Beneficial Ownership Verification",
         "source_file": "input/regulation.txt",
-        "source_quote": "Section 6.3 - Evidence Retention\nCompliance teams must retain evidence and audit logs for at least 5 years.",
-        "content_hash": "d2203d236fc7"
+        "source_quote": "Institutions must verify and record beneficial ownership for all corporate clients within 14 days. Violations are subject to enforcement action and licence suspension.",
+        "content_hash": "bcd14e5e156f"
       },
       "remediation": {
-        "recommended_action": "Update 'POL-003' to change the retention/review period from 3 to 5 as required by Section 6.3 - Evidence Retention.",
-        "effort_estimate": "Medium",
-        "suggested_owner": "Audit Team",
-        "target_deadline": "2026-08-02"
+        "recommended_action": "Draft a new policy to satisfy: Institutions must verify and record beneficial ownership for all corporate clients within 14 days.",
+        "effort_estimate": "High",
+        "suggested_owner": "Unknown",
+        "target_deadline": "2026-06-01"
       },
       "human_oversight": {
-        "review_required": false,
-        "review_reason": "",
+        "review_required": true,
+        "review_reason": "No existing policy — legal drafting required before remediation can start.",
         "open_questions": [],
         "flagged_ambiguities": []
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T11:43:45.332879Z",
+        "analyzed_at": "2026-06-15T20:52:23.416302Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "gap_id": "GAP-004",
+      "change_id": "CHG-004",
+      "policy_area": "Monitoring",
+      "gap_status": "Needs Review",
+      "severity": "Medium",
+      "confidence": 0.7,
+      "gap_description": "Policy exists but semantic alignment with the requirement needs manual verification.",
+      "current_policy": {
+        "policy_id": "POL-002",
+        "text": "Suspicious transactions are reviewed weekly",
+        "owner": "AML Team",
+        "jurisdiction": "EU"
+      },
+      "required_change": {
+        "requirement_text": "Compliance teams must file suspicious activity reports within 24 hours of detection.",
+        "source_section": "Section 5.2 - Suspicious Activity Reporting",
+        "effective_date": "2026-07-01",
+        "jurisdiction": "EU"
+      },
+      "evidence": {
+        "evidence_id": "EV-004",
+        "source_section": "Section 5.2 - Suspicious Activity Reporting",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Compliance teams must file suspicious activity reports within 24 hours of detection. Breach of this requirement constitutes a regulatory violation liable to fines and remediation orders.",
+        "content_hash": "9ccf2e9d3ba1"
+      },
+      "remediation": {
+        "recommended_action": "Perform a manual policy review against the regulatory requirement text.",
+        "effort_estimate": "Low",
+        "suggested_owner": "AML Team",
+        "target_deadline": "2026-06-01"
+      },
+      "human_oversight": {
+        "review_required": true,
+        "review_reason": "Rule-based fallback could not determine gap with confidence — human review required.",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "metadata": {
+        "analyzed_by": "agent_c_gap_analysis",
+        "analyzed_at": "2026-06-15T20:52:23.418290Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "gap_id": "GAP-005",
+      "change_id": "CHG-005",
+      "policy_area": "General",
+      "gap_status": "Non-compliant",
+      "severity": "High",
+      "confidence": 0.7,
+      "gap_description": "No internal policy exists for this regulatory requirement.",
+      "current_policy": {
+        "policy_id": "N/A",
+        "text": "No matching policy found",
+        "owner": "Unknown",
+        "jurisdiction": "EU"
+      },
+      "required_change": {
+        "requirement_text": "All compliance staff must complete AML certification training every 6 months.",
+        "source_section": "Section 6.1 - Staff Training and Certification",
+        "effective_date": "2026-07-01",
+        "jurisdiction": "EU"
+      },
+      "evidence": {
+        "evidence_id": "EV-005",
+        "source_section": "Section 6.1 - Staff Training and Certification",
+        "source_file": "input/regulation.txt",
+        "source_quote": "All compliance staff must complete AML certification training every 6 months. Non-compliance with training obligations may result in regulatory sanctions against the institution.",
+        "content_hash": "7ec99d29fe5b"
+      },
+      "remediation": {
+        "recommended_action": "Draft a new policy to satisfy: All compliance staff must complete AML certification training every 6 months.",
+        "effort_estimate": "High",
+        "suggested_owner": "Unknown",
+        "target_deadline": "2026-06-01"
+      },
+      "human_oversight": {
+        "review_required": true,
+        "review_reason": "No existing policy — legal drafting required before remediation can start.",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "metadata": {
+        "analyzed_by": "agent_c_gap_analysis",
+        "analyzed_at": "2026-06-15T20:52:23.419287Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
