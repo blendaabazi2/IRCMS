@@ -290,7 +290,7 @@ def _call_claude(client: anthropic.Anthropic, change: dict, policy: dict) -> dic
         return result
     except (anthropic.BadRequestError, anthropic.AuthenticationError,
             anthropic.PermissionDeniedError, anthropic.APIConnectionError,
-            anthropic.RateLimitError) as exc:
+            anthropic.RateLimitError, TypeError, ValueError) as exc:
         print(f"[agent_c] Claude unavailable ({type(exc).__name__}): {exc}. Using rule-based fallback.")
         result = _rule_based_gap(change, policy)
         result["_source"] = "fallback"

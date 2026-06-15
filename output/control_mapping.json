@@ -3,13 +3,29 @@
     "mapping_id": "MAP-001",
     "gap_id": "GAP-001",
     "change_id": "CHG-001",
-    "control_id": "CTRL-001",
-    "control_name": "KYC Periodic Review",
-    "mapping_status": "Existing control mapped",
-    "cross_jurisdiction_overlap": false,
-    "owner": "Compliance Team",
+    "control_id": "NEW-CTRL-001",
+    "control_name": "New General Control",
+    "mapping_status": "New control required",
+    "owner": "Unknown",
     "evidence_id": "EV-001",
-    "recommendation": "Update existing control to meet new regulatory requirement"
+    "recommendation": "Design and implement a new control; assign a dedicated owner",
+    "effort_estimate": "High",
+    "evidence_requirements": [
+      "Policy document",
+      "System audit log",
+      "Manager sign-off"
+    ],
+    "suggested_owner": "Unknown",
+    "cross_jurisdiction_overlap": false,
+    "jurisdictions_affected": [],
+    "overlap_note": "No cross-jurisdiction overlap detected",
+    "metadata": {
+      "mapped_by": "agent_e_control_mapping",
+      "mapped_at": "2026-06-15T20:52:23.913969Z",
+      "scope": [
+        "EU"
+      ]
+    }
   },
   {
     "mapping_id": "MAP-002",
@@ -18,21 +34,107 @@
     "control_id": "CTRL-002",
     "control_name": "Transaction Monitoring",
     "mapping_status": "Existing control mapped",
-    "cross_jurisdiction_overlap": false,
     "owner": "AML Team",
     "evidence_id": "EV-002",
-    "recommendation": "Update existing control to meet new regulatory requirement"
+    "recommendation": "Update existing control to meet new regulatory requirement",
+    "effort_estimate": "Low",
+    "evidence_requirements": [
+      "Policy document",
+      "Peer review sign-off"
+    ],
+    "suggested_owner": "AML Team",
+    "cross_jurisdiction_overlap": false,
+    "jurisdictions_affected": [],
+    "overlap_note": "No cross-jurisdiction overlap detected",
+    "metadata": {
+      "mapped_by": "agent_e_control_mapping",
+      "mapped_at": "2026-06-15T20:52:23.914963Z",
+      "scope": [
+        "EU"
+      ]
+    }
   },
   {
     "mapping_id": "MAP-003",
     "gap_id": "GAP-003",
     "change_id": "CHG-003",
-    "control_id": "CTRL-003",
-    "control_name": "Audit Evidence Retention",
-    "mapping_status": "Existing control mapped",
-    "cross_jurisdiction_overlap": false,
-    "owner": "Audit Team",
+    "control_id": "NEW-CTRL-003",
+    "control_name": "New General Control",
+    "mapping_status": "New control required",
+    "owner": "Unknown",
     "evidence_id": "EV-003",
-    "recommendation": "Update existing control to meet new regulatory requirement"
+    "recommendation": "Design and implement a new control; assign a dedicated owner",
+    "effort_estimate": "High",
+    "evidence_requirements": [
+      "Policy document",
+      "System audit log",
+      "Manager sign-off"
+    ],
+    "suggested_owner": "Unknown",
+    "cross_jurisdiction_overlap": false,
+    "jurisdictions_affected": [],
+    "overlap_note": "No cross-jurisdiction overlap detected",
+    "metadata": {
+      "mapped_by": "agent_e_control_mapping",
+      "mapped_at": "2026-06-15T20:52:23.915960Z",
+      "scope": [
+        "EU"
+      ]
+    }
+  },
+  {
+    "mapping_id": "MAP-004",
+    "gap_id": "GAP-004",
+    "change_id": "CHG-004",
+    "control_id": "CTRL-002",
+    "control_name": "Transaction Monitoring",
+    "mapping_status": "Existing control mapped",
+    "owner": "AML Team",
+    "evidence_id": "EV-004",
+    "recommendation": "Update existing control to meet new regulatory requirement",
+    "effort_estimate": "Low",
+    "evidence_requirements": [
+      "Policy document",
+      "Peer review sign-off"
+    ],
+    "suggested_owner": "AML Team",
+    "cross_jurisdiction_overlap": false,
+    "jurisdictions_affected": [],
+    "overlap_note": "No cross-jurisdiction overlap detected",
+    "metadata": {
+      "mapped_by": "agent_e_control_mapping",
+      "mapped_at": "2026-06-15T20:52:23.916958Z",
+      "scope": [
+        "EU"
+      ]
+    }
+  },
+  {
+    "mapping_id": "MAP-005",
+    "gap_id": "GAP-005",
+    "change_id": "CHG-005",
+    "control_id": "NEW-CTRL-005",
+    "control_name": "New General Control",
+    "mapping_status": "New control required",
+    "owner": "Unknown",
+    "evidence_id": "EV-005",
+    "recommendation": "Design and implement a new control; assign a dedicated owner",
+    "effort_estimate": "High",
+    "evidence_requirements": [
+      "Policy document",
+      "System audit log",
+      "Manager sign-off"
+    ],
+    "suggested_owner": "Unknown",
+    "cross_jurisdiction_overlap": false,
+    "jurisdictions_affected": [],
+    "overlap_note": "No cross-jurisdiction overlap detected",
+    "metadata": {
+      "mapped_by": "agent_e_control_mapping",
+      "mapped_at": "2026-06-15T20:52:23.917955Z",
+      "scope": [
+        "EU"
+      ]
+    }
   }
 ]

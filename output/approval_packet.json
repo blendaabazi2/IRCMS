@@ -1,9 +1,19 @@
 {
   "project": "IRCMS",
-  "document": "Customer Due Diligence Update",
-  "summary": "3 regulatory changes detected, 3 compliance gaps identified.",
+  "run_id": "CTX-001",
+  "document": "AML Enforcement Directive 2026",
+  "summary": "5 regulatory changes detected, 5 compliance gaps identified (3 high/critical risk).",
   "high_risk_gaps": 3,
+  "new_controls_required": 3,
+  "cross_jurisdiction_overlaps": 0,
   "approval_required": true,
-  "recommended_action": "Approve remediation plan and assign owners",
-  "metrics_reference": "output/metrics.json"
+  "recommended_action": "Approve remediation plan and assign owners per routing",
+  "routing_summary": {
+    "Compliance Lead Escalation": 3,
+    "Legal Review": 2,
+    "Control Owner Review": 0,
+    "Policy Owner Remediation": 0
+  },
+  "metrics_reference": "output/metrics.json",
+  "generated_at": "2026-06-15T20:52:23.933911Z"
 }
