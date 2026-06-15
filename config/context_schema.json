@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContextPacket",
+  "description": "Output of Agent A step 2 — aggregates regulatory metadata, policy references, and jurisdiction scope for downstream agents.",
+  "type": "object",
+  "required": ["context_packet_id", "metadata", "jurisdiction_scope", "policy_references", "evidence_count", "risk_signals", "status"],
+  "properties": {
+    "context_packet_id": {
+      "type": "string",
+      "description": "Unique run identifier propagated to all downstream outputs (e.g. CTX-001)"
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["document_title", "jurisdiction", "regulator", "effective_date", "document_type", "source_file", "processed_at"],
+      "properties": {
+        "document_title":  { "type": "string" },
+        "jurisdiction":    { "type": "string", "description": "e.g. EU, US, UK" },
+        "regulator":       { "type": "string" },
+        "effective_date":  { "type": "string", "format": "date" },
+        "document_type":   { "type": "string" },
+        "source_file":     { "type": "string", "description": "Relative path to the regulation source file" },
+        "processed_at":    { "type": "string", "format": "date-time" }
+      }
+    },
+    "jurisdiction_scope": {
+      "type": "object",
+      "properties": {
+        "project_scope":    { "type": "string" },
+        "jurisdictions":    { "type": "array", "items": { "type": "string" } },
+        "business_units":   { "type": "array", "items": { "type": "string" } },
+        "in_scope":         { "type": "boolean" }
+      }
+    },
+    "policy_references": {
+      "type": "array",
+      "description": "Current internal policies in scope — loaded from current_policies.csv",
+      "items": {
+        "type": "object",
+        "properties": {
+          "policy_id":      { "type": "string" },
+          "policy_area":    { "type": "string" },
+          "current_policy": { "type": "string" },
+          "owner":          { "type": "string" },
+          "jurisdiction":   { "type": "string" }
+        }
+      }
+    },
+    "evidence_count":  { "type": "integer", "minimum": 0 },
+    "risk_signals":    { "type": "array", "items": { "type": "string" }, "description": "Keywords used by Agent B for change extraction" },
+    "change_history":  { "type": "array", "description": "Previous run references for incremental processing" },
+    "status":          { "type": "string", "enum": ["created", "processing", "complete", "error"] }
+  }
+}

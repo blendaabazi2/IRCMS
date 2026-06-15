@@ -1,20 +1,57 @@
 {
   "context_packet_id": "CTX-001",
   "metadata": {
-    "document_title": "Customer Due Diligence Update",
+    "document_title": "AML Enforcement Directive 2026",
     "jurisdiction": "EU",
-    "regulator": "Example Financial Authority",
-    "effective_date": "2026-09-01",
+    "regulator": "European Banking Authority",
+    "effective_date": "2026-07-01",
     "document_type": "Regulatory Publication",
     "source_file": "input/regulation.txt",
-    "processed_at": "2026-06-14T14:19:24.965601Z"
+    "processed_at": "2026-06-15T12:33:49.982181Z"
   },
-  "jurisdiction_scope_file": "input/jurisdiction_scope.json",
-  "evidence_count": 3,
+  "jurisdiction_scope": {
+    "project_scope": "EU regulatory change management",
+    "jurisdictions": [
+      "EU"
+    ],
+    "business_units": [
+      "Risk Operations",
+      "Financial Crime",
+      "Internal Audit"
+    ],
+    "in_scope": true
+  },
+  "policy_references": [
+    {
+      "policy_id": "POL-001",
+      "policy_area": "KYC",
+      "current_policy": "KYC review for high-risk customers is performed every 24 months",
+      "owner": "Compliance Team",
+      "jurisdiction": "EU"
+    },
+    {
+      "policy_id": "POL-002",
+      "policy_area": "Monitoring",
+      "current_policy": "Suspicious transactions are reviewed weekly",
+      "owner": "AML Team",
+      "jurisdiction": "EU"
+    },
+    {
+      "policy_id": "POL-003",
+      "policy_area": "Audit",
+      "current_policy": "Evidence and audit logs are retained for 3 years",
+      "owner": "Audit Team",
+      "jurisdiction": "EU"
+    }
+  ],
+  "evidence_count": 5,
   "risk_signals": [
     "must",
     "high-risk",
-    "within 48 hours"
+    "within 48 hours",
+    "penalty",
+    "sanction"
   ],
+  "change_history": [],
   "status": "created"
 }

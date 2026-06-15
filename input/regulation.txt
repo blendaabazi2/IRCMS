@@ -1,13 +1,19 @@
-Regulatory Publication: Customer Due Diligence Update
+Regulatory Publication: AML Enforcement Directive 2026
 Jurisdiction: EU
-Regulator: Example Financial Authority
-Effective Date: 2026-09-01
+Regulator: European Banking Authority
+Effective Date: 2026-07-01
 
-Section 4.2 - KYC Review Frequency
-Financial institutions must perform KYC customer reviews every 12 months for high-risk customers.
+Section 2.1 - Enhanced Due Diligence for High-Risk Clients
+Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding. Failure to comply will result in penalties of up to EUR 10 million or 10% of annual turnover.
 
-Section 5.1 - Suspicious Activity Monitoring
-Institutions must monitor suspicious transactions daily and report high-risk activity within 48 hours.
+Section 3.4 - Real-Time Transaction Monitoring
+Institutions must implement real-time transaction monitoring systems capable of flagging suspicious activity within 60 seconds. Non-compliance sanctions may reach EUR 5 million per breach.
 
-Section 6.3 - Evidence Retention
-Compliance teams must retain evidence and audit logs for at least 5 years.
+Section 4.7 - Beneficial Ownership Verification
+Institutions must verify and record beneficial ownership for all corporate clients within 14 days. Violations are subject to enforcement action and licence suspension.
+
+Section 5.2 - Suspicious Activity Reporting
+Compliance teams must file suspicious activity reports within 24 hours of detection. Breach of this requirement constitutes a regulatory violation liable to fines and remediation orders.
+
+Section 6.1 - Staff Training and Certification
+All compliance staff must complete AML certification training every 6 months. Non-compliance with training obligations may result in regulatory sanctions against the institution.
