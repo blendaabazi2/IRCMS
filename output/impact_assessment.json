@@ -1,6 +1,6 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-14T14:19:29.856640Z",
+  "generated_at": "2026-06-15T11:43:46.670643Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
   "total_assessments": 3,
@@ -43,15 +43,15 @@
         "KYC Platform"
       ],
       "priority": "High",
-      "impact_summary": "The KYC gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 78 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The KYC gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 77 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-14T14:19:29.371165Z",
+        "analyzed_at": "2026-06-15T11:43:46.665514Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 78
+        "days_to_deadline": 77
       }
     },
     {
@@ -80,15 +80,15 @@
         "AML Monitoring System"
       ],
       "priority": "High",
-      "impact_summary": "The Monitoring gap (GAP-002) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 78 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The Monitoring gap (GAP-002) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 77 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-14T14:19:29.610155Z",
+        "analyzed_at": "2026-06-15T11:43:46.668332Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 78
+        "days_to_deadline": 77
       }
     },
     {
@@ -117,15 +117,15 @@
         "Document Management System"
       ],
       "priority": "High",
-      "impact_summary": "The Audit gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 78 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The Audit gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 77 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-14T14:19:29.856552Z",
+        "analyzed_at": "2026-06-15T11:43:46.670607Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 78
+        "days_to_deadline": 77
       }
     }
   ]
