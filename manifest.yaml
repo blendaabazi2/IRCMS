@@ -1,0 +1,62 @@
+bundle_id: BUNDLE-001
+version: '1.0'
+generated_at: '2026-06-15T12:33:49.970002Z'
+inputs:
+  regulation:
+    file: input/regulation.txt
+    formats_supported:
+    - txt
+    - pdf
+    - html
+    required: true
+    description: Regulatory publication to be processed
+  policies:
+    file: input/current_policies.csv
+    required: true
+    columns:
+    - policy_id
+    - policy_area
+    - current_policy
+    - owner
+    - jurisdiction
+    description: Current internal policies compared against regulation
+  control_inventory:
+    file: input/control_inventory.csv
+    required: true
+    columns:
+    - control_id
+    - control_name
+    - control_area
+    - description
+    - owner
+    - jurisdiction
+    description: Existing controls mapped to policy areas
+  process_map:
+    file: input/process_map.csv
+    required: true
+    columns:
+    - process_id
+    - process_name
+    - system
+    - business_unit
+    - owner
+    description: Business processes and systems affected by regulatory changes
+  jurisdiction_scope:
+    file: input/jurisdiction_scope.json
+    required: true
+    description: Jurisdictions and business units in scope for this bundle
+outputs:
+  classified_changes: output/classified_changes.json
+  context_packet: output/context_packet.json
+  evidence_index: output/evidence_index.json
+  risk_flags: output/risk_flags.json
+  change_register: output/change_register.json
+  gap_analysis: output/gap_analysis.json
+  impact_assessment: output/impact_assessment.json
+  impact_matrix: output/impact_matrix.csv
+  control_mapping: output/control_mapping.json
+  remediation_plan: output/remediation_plan.md
+  exceptions: output/exceptions.md
+  approval_packet: output/approval_packet.json
+  audit_log: output/audit_log.md
+  metrics: output/metrics.json

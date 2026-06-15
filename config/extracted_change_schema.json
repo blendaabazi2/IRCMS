@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ExtractedChange",
+  "description": "One classified regulatory change produced by Agent A (classified_changes.json) and refined by Agent B (change_register.json).",
+  "type": "object",
+  "required": ["classified_id", "evidence_id", "source_section", "page_estimate", "text", "change_type", "content_hash"],
+  "properties": {
+    "classified_id": {
+      "type": "string",
+      "pattern": "^CLS-\\d{3}$",
+      "description": "Unique identifier assigned by Agent A (e.g. CLS-001)"
+    },
+    "evidence_id": {
+      "type": "string",
+      "pattern": "^EV-\\d{3}$",
+      "description": "Foreign key to evidence_index.json"
+    },
+    "source_section": {
+      "type": "string",
+      "description": "Section header from the source regulation (e.g. Section 4.2 - KYC Review Frequency)"
+    },
+    "page_estimate": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Estimated page number in source document (~3000 chars per page for TXT)"
+    },
+    "text": {
+      "type": "string",
+      "description": "The extracted regulatory sentence or clause — body only, no section header"
+    },
+    "change_type": {
+      "type": "string",
+      "enum": ["new_requirement", "amendment", "revocation", "clarification", "guidance", "general"],
+      "description": "Heuristic classification of the change based on keyword patterns"
+    },
+    "content_hash": {
+      "type": "string",
+      "description": "SHA-256 prefix (12 chars) of the text field — used for deduplication and tamper detection"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Extraction confidence score added by Agent B (absent in Agent A output)"
+    },
+    "ambiguous": {
+      "type": "boolean",
+      "description": "True if Agent B flagged this change for legal review due to ambiguous language"
+    }
+  }
+}
