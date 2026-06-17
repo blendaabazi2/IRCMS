@@ -8,10 +8,10 @@
     "change_type": "new_requirement",
     "penalty_risk": false,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": true,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031246Z"
   },
   {
     "flag_id": "FLAG-002",
@@ -22,10 +22,10 @@
     "change_type": "general",
     "penalty_risk": true,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": false,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031271Z"
   },
   {
     "flag_id": "FLAG-003",
@@ -36,10 +36,10 @@
     "change_type": "new_requirement",
     "penalty_risk": false,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": true,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031288Z"
   },
   {
     "flag_id": "FLAG-004",
@@ -50,10 +50,10 @@
     "change_type": "general",
     "penalty_risk": true,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": false,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031300Z"
   },
   {
     "flag_id": "FLAG-005",
@@ -64,10 +64,10 @@
     "change_type": "new_requirement",
     "penalty_risk": false,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": true,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031314Z"
   },
   {
     "flag_id": "FLAG-006",
@@ -78,10 +78,10 @@
     "change_type": "general",
     "penalty_risk": true,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": false,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031326Z"
   },
   {
     "flag_id": "FLAG-007",
@@ -92,10 +92,10 @@
     "change_type": "new_requirement",
     "penalty_risk": false,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": true,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031339Z"
   },
   {
     "flag_id": "FLAG-008",
@@ -106,10 +106,10 @@
     "change_type": "general",
     "penalty_risk": true,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": false,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031350Z"
   },
   {
     "flag_id": "FLAG-009",
@@ -120,10 +120,10 @@
     "change_type": "new_requirement",
     "penalty_risk": false,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": true,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031371Z"
   },
   {
     "flag_id": "FLAG-010",
@@ -134,9 +134,9 @@
     "change_type": "general",
     "penalty_risk": true,
     "short_window": true,
-    "days_to_deadline": 15,
+    "days_to_deadline": 13,
     "is_irrelevant": false,
     "high_impact": false,
-    "flagged_at": "2026-06-15T20:52:22.739105Z"
+    "flagged_at": "2026-06-17T09:30:24.031383Z"
   }
 ]

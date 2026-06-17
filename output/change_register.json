@@ -5,9 +5,20 @@
     "jurisdiction": "EU",
     "effective_date": "2026-07-01",
     "source_section": "Section 2.1 - Enhanced Due Diligence for High-Risk Clients",
+    "segment_type": "article",
     "evidence_id": "EV-001",
     "confidence": 0.95,
-    "extraction_method": "rule_based_demo"
+    "legal_review_required": false,
+    "ambiguity_flags": [],
+    "bounding_box": {
+      "page": 1,
+      "char_offset_start": 0,
+      "char_offset_end": 115,
+      "position_estimate": "top_third",
+      "source": "char_offset_estimate"
+    },
+    "extraction_method": "rule_based",
+    "extracted_at": "2026-06-17T09:30:24.067103Z"
   },
   {
     "change_id": "CHG-002",
@@ -15,9 +26,20 @@
     "jurisdiction": "EU",
     "effective_date": "2026-07-01",
     "source_section": "Section 3.4 - Real-Time Transaction Monitoring",
+    "segment_type": "article",
     "evidence_id": "EV-002",
     "confidence": 0.95,
-    "extraction_method": "rule_based_demo"
+    "legal_review_required": false,
+    "ambiguity_flags": [],
+    "bounding_box": {
+      "page": 1,
+      "char_offset_start": 0,
+      "char_offset_end": 127,
+      "position_estimate": "top_third",
+      "source": "char_offset_estimate"
+    },
+    "extraction_method": "rule_based",
+    "extracted_at": "2026-06-17T09:30:24.067465Z"
   },
   {
     "change_id": "CHG-003",
@@ -25,9 +47,20 @@
     "jurisdiction": "EU",
     "effective_date": "2026-07-01",
     "source_section": "Section 4.7 - Beneficial Ownership Verification",
+    "segment_type": "article",
     "evidence_id": "EV-003",
     "confidence": 0.95,
-    "extraction_method": "rule_based_demo"
+    "legal_review_required": false,
+    "ambiguity_flags": [],
+    "bounding_box": {
+      "page": 1,
+      "char_offset_start": 0,
+      "char_offset_end": 98,
+      "position_estimate": "top_third",
+      "source": "char_offset_estimate"
+    },
+    "extraction_method": "rule_based",
+    "extracted_at": "2026-06-17T09:30:24.067599Z"
   },
   {
     "change_id": "CHG-004",
@@ -35,9 +68,20 @@
     "jurisdiction": "EU",
     "effective_date": "2026-07-01",
     "source_section": "Section 5.2 - Suspicious Activity Reporting",
+    "segment_type": "article",
     "evidence_id": "EV-004",
     "confidence": 0.95,
-    "extraction_method": "rule_based_demo"
+    "legal_review_required": false,
+    "ambiguity_flags": [],
+    "bounding_box": {
+      "page": 1,
+      "char_offset_start": 0,
+      "char_offset_end": 84,
+      "position_estimate": "top_third",
+      "source": "char_offset_estimate"
+    },
+    "extraction_method": "rule_based",
+    "extracted_at": "2026-06-17T09:30:24.067737Z"
   },
   {
     "change_id": "CHG-005",
@@ -45,8 +89,19 @@
     "jurisdiction": "EU",
     "effective_date": "2026-07-01",
     "source_section": "Section 6.1 - Staff Training and Certification",
+    "segment_type": "article",
     "evidence_id": "EV-005",
     "confidence": 0.95,
-    "extraction_method": "rule_based_demo"
+    "legal_review_required": false,
+    "ambiguity_flags": [],
+    "bounding_box": {
+      "page": 1,
+      "char_offset_start": 0,
+      "char_offset_end": 77,
+      "position_estimate": "top_third",
+      "source": "char_offset_estimate"
+    },
+    "extraction_method": "rule_based",
+    "extracted_at": "2026-06-17T09:30:24.068192Z"
   }
 ]

@@ -120,18 +120,29 @@ with st.expander("Input Document", expanded=True):
     else:
         st.warning("No input/regulation.txt found.")
 
-with st.expander("Context Packet (Agent A)"):
-    st.json(context)
+with st.expander("Context Packet (Agent A)", expanded=False):
+    if context:
+        ch = context.get("change_history", [])
+        rs = context.get("risk_signals", [])
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Evidence Records",      context.get("evidence_count", 0))
+        m2.metric("Prior Runs",            len(ch))
+        m3.metric("Risk Signals Detected", len(rs))
+        if rs:
+            st.caption("Signals: " + "  ·  ".join(f"`{s}`" for s in rs))
+        if ch:
+            st.dataframe(pd.DataFrame(ch)[["run_at", "document", "evidence_count", "status"]],
+                         use_container_width=True)
+        with st.expander("Raw JSON"):
+            st.json(context)
+    else:
+        st.info("Context packet not generated yet.")
 
 # ── Agent A outputs ───────────────────────────────────────────────────────────
 
 st.subheader("Agent A — Regulatory Feed Intake (Gatekeeper)")
 
-tab1, tab2, tab3 = st.tabs([
-    "Classified Changes",
-    "Evidence Index",
-    "Risk Flags",
-])
+tab1, tab2, tab3 = st.tabs(["Classified Changes", "Evidence Index", "Risk Flags"])
 
 with tab1:
     if classified_changes:
@@ -139,43 +150,70 @@ with tab1:
         for c in classified_changes:
             t = c.get("change_type", "unknown")
             type_counts[t] = type_counts.get(t, 0) + 1
-        st.caption(f"{len(classified_changes)} changes classified — types: {type_counts}")
-        st.dataframe(pd.DataFrame(classified_changes), use_container_width=True)
+        st.caption(f"{len(classified_changes)} changes — {type_counts}")
+        df_cls = pd.DataFrame(classified_changes)[["classified_id", "source_section", "text", "change_type"]]
+        st.dataframe(df_cls, use_container_width=True)
     else:
-        st.info("No classified changes yet. Run python run_pipeline.py first.")
+        st.info("No classified changes yet.")
 
 with tab2:
     if evidence_index:
-        st.caption(f"{len(evidence_index)} evidence records linked to source paragraphs")
-        st.dataframe(pd.DataFrame(evidence_index), use_container_width=True)
+        st.caption(f"{len(evidence_index)} evidence records")
+        df_ev = pd.DataFrame(evidence_index)[["evidence_id", "source_section", "page_estimate", "text_excerpt"]]
+        st.dataframe(df_ev, use_container_width=True)
     else:
-        st.info("No evidence index yet. Run python run_pipeline.py first.")
+        st.info("No evidence index yet.")
 
 with tab3:
     if risk_flags:
-        col_a, col_b, col_c = st.columns(3)
-        col_a.metric("Total Flags",    len(risk_flags))
-        col_b.metric("Penalty Risk",   sum(1 for f in risk_flags if f.get("penalty_risk")))
-        col_c.metric("Short Window",   sum(1 for f in risk_flags if f.get("short_window")))
-        st.dataframe(pd.DataFrame(risk_flags), use_container_width=True)
+        col_a, col_b, col_c, col_d = st.columns(4)
+        col_a.metric("Total Flags",   len(risk_flags))
+        col_b.metric("Penalty Risk",  sum(1 for f in risk_flags if f.get("penalty_risk")))
+        col_c.metric("Short Window",  sum(1 for f in risk_flags if f.get("short_window")))
+        col_d.metric("Irrelevant",    sum(1 for f in risk_flags if f.get("is_irrelevant")))
+        df_rf = pd.DataFrame(risk_flags)[["flag_id", "source_section", "text", "penalty_risk", "short_window", "days_to_deadline", "high_impact"]]
+        st.dataframe(df_rf, use_container_width=True)
     else:
-        days = None
-        if classified_changes:
-            days = classified_changes[0].get("days_to_deadline")
         meta = context.get("metadata", {})
-        eff  = meta.get("effective_date", "")
-        st.success(
-            f"No risk flags — regulation '{meta.get('document_title', '')}' "
-            f"has no penalty keywords and effective date ({eff}) is more than 60 days away."
-        )
+        st.success(f"No risk flags for '{meta.get('document_title', '')}' (effective: {meta.get('effective_date', '')})")
 
 st.divider()
 
 # ── Agent B outputs ───────────────────────────────────────────────────────────
 
-st.subheader("Extracted Changes (Agent B)")
+st.subheader("Agent B — Change Extraction")
+
 if changes:
-    st.dataframe(pd.DataFrame(changes), use_container_width=True)
+    legal_review_count = sum(1 for c in changes if c.get("legal_review_required"))
+
+    b1, b2, b3 = st.columns(3)
+    b1.metric("Changes Extracted",     len(changes))
+    b2.metric("Legal Review Required", legal_review_count)
+    b3.metric("Avg Confidence",        f"{sum(c.get('confidence',0) for c in changes)/len(changes):.2f}")
+
+    if legal_review_count:
+        st.warning(f"{legal_review_count} change(s) flagged for legal review due to ambiguous language.")
+
+    # Clean display table — key fields only
+    flat_changes = []
+    for c in changes:
+        bb = c.get("bounding_box") or {}
+        flat_changes.append({
+            "ID":             c.get("change_id", ""),
+            "Requirement":    c.get("requirement", ""),
+            "Section":        c.get("source_section", ""),
+            "Segment":        c.get("segment_type", ""),
+            "Confidence":     c.get("confidence", ""),
+            "Legal Review":   c.get("legal_review_required", False),
+            "Ambiguity":      " | ".join(c.get("ambiguity_flags") or []) or "—",
+            "Page":           bb.get("page", ""),
+            "Position":       bb.get("position_estimate", ""),
+        })
+
+    st.dataframe(pd.DataFrame(flat_changes), use_container_width=True)
+
+    with st.expander("Bounding Box & Raw Details"):
+        st.json(changes)
 else:
     st.info("No changes generated yet.")
 
