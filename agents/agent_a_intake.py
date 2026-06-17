@@ -3,15 +3,17 @@ Agent A - Regulatory Feed Intake (Gatekeeper)
 
 Four responsibilities:
   1. Regulatory Processing Gateway  — load TXT/PDF/HTML, classify each change type
-  2. Context Packet Construction    — metadata + policy references + jurisdiction scope
+  2. Context Packet Construction    — metadata + prior change history + policy references
+                                      + jurisdiction scope + derived risk signals
   3. Universal Evidence Index       — link every change to its source paragraph (page + section)
-  4. Risk Detection & Filtering     — flag penalty risks and short effective windows (< 60 days)
+  4. Risk Detection & Filtering     — flag penalty risks and short effective windows (< 60 days);
+                                      filter irrelevant items from classified_changes output
 
 Outputs:
-  output/classified_changes.json
+  output/classified_changes.json   (relevant changes only — irrelevant items excluded)
   output/context_packet.json
   output/evidence_index.json
-  output/risk_flags.json
+  output/risk_flags.json           (penalty + short-window + irrelevant flags)
 """
 
 import re
@@ -36,10 +38,6 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 # ═══════════════════════════════════════════════════════════════════════════════
 
 def validate_manifest() -> dict:
-    """
-    Load and validate manifest.yaml against manifest_schema.json.
-    Returns the parsed manifest. Raises FileNotFoundError if manifest is missing.
-    """
     manifest_path = BASE_DIR / "manifest.yaml"
     if not manifest_path.exists():
         raise FileNotFoundError("manifest.yaml not found in project root.")
@@ -59,7 +57,6 @@ def validate_manifest() -> dict:
     if missing_files:
         raise FileNotFoundError(f"Required input files declared in manifest.yaml not found: {missing_files}")
 
-    # Stamp generated_at and save back
     manifest["generated_at"] = timestamp()
     with open(manifest_path, "w", encoding="utf-8") as f:
         yaml.dump(manifest, f, default_flow_style=False, allow_unicode=True, sort_keys=False)
@@ -73,7 +70,7 @@ def validate_manifest() -> dict:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 _CHANGE_TYPE_PATTERNS: dict[str, list[str]] = {
-    "new_requirement": [r"\bmust\b", r"\bshall\b", r"\brequired to\b", r"\bobligated\b"],
+    "new_requirement": [r"\bmust\b", r"\bshall\b", r"\brequired to\b", r"\bare required\b", r"\bobligated\b"],
     "amendment":       [r"\bamended\b", r"\bupdated\b", r"\bmodified\b", r"\breplaced by\b"],
     "revocation":      [r"\brevoked\b", r"\bsuperseded\b", r"\bno longer applies\b", r"\bnull and void\b"],
     "clarification":   [r"\bclarif\w+\b", r"\bfor the purposes of\b", r"\bmeans\b", r"\bdefined as\b"],
@@ -82,7 +79,6 @@ _CHANGE_TYPE_PATTERNS: dict[str, list[str]] = {
 
 
 def _find_regulation_file() -> Path:
-    """Return the first regulation file found in input/ (.txt, .pdf, .html)."""
     for pattern in ("*.txt", "*.pdf", "*.html", "*.htm"):
         matches = list(INPUT_DIR.glob(pattern))
         if matches:
@@ -91,7 +87,6 @@ def _find_regulation_file() -> Path:
 
 
 def _load_text(path: Path) -> str:
-    """Load plain text from .txt, .pdf, or .html source."""
     suffix = path.suffix.lower()
 
     if suffix == ".pdf":
@@ -107,8 +102,13 @@ def _load_text(path: Path) -> str:
     if suffix in (".html", ".htm"):
         import html as _html
         raw = path.read_text(encoding="utf-8", errors="ignore")
+        # Remove script/style blocks first, then strip all tags
+        raw = re.sub(r"<(script|style)[^>]*>.*?</(script|style)>", " ", raw, flags=re.DOTALL | re.IGNORECASE)
         stripped = re.sub(r"<[^>]+>", " ", raw)
-        return _html.unescape(stripped)
+        # Collapse whitespace while preserving paragraph breaks
+        stripped = re.sub(r"[ \t]+", " ", stripped)
+        stripped = re.sub(r"\n{3,}", "\n\n", stripped)
+        return _html.unescape(stripped).strip()
 
     return read_text_file(path)
 
@@ -123,8 +123,9 @@ def _classify_change_type(text: str) -> str:
 
 def build_classified_changes(evidence_index: list) -> list:
     """
-    Classify each paragraph in the evidence index into a typed change record.
-    Output: classified_changes[] consumed by Agent B and Risk Filtering.
+    Classify each sentence in the evidence index into a typed change record.
+    Returns ALL sentences (relevant and irrelevant) so that risk filtering
+    can inspect the full set. Caller filters irrelevant items before writing.
     """
     classified = []
     counter = 1
@@ -132,7 +133,6 @@ def build_classified_changes(evidence_index: list) -> list:
         sentences = re.split(r"(?<=[.!?])\s+", ev.get("text_excerpt", ""))
         for sentence in sentences:
             stripped = sentence.strip()
-            # Skip pure section-header lines (no verb content)
             if not stripped or len(stripped.split()) < 4:
                 continue
             if re.match(r"^Section\s+[\d.]+", stripped) and "." not in stripped:
@@ -184,21 +184,62 @@ def _load_jurisdiction_scope() -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _load_change_history() -> list:
+    """
+    Load prior run metadata from existing context_packet.json if present.
+    Enables the system to track re-runs and build an incremental change history.
+    """
+    path = OUTPUT_DIR / "context_packet.json"
+    if not path.exists():
+        return []
+    try:
+        prev = json.loads(path.read_text(encoding="utf-8"))
+        meta = prev.get("metadata", {})
+        return [{
+            "run_at":         meta.get("processed_at", "Unknown"),
+            "document":       meta.get("document_title", "Unknown"),
+            "jurisdiction":   meta.get("jurisdiction", "Unknown"),
+            "evidence_count": prev.get("evidence_count", 0),
+            "status":         prev.get("status", "completed"),
+        }]
+    except Exception:
+        return []
+
+
+_RISK_SIGNAL_KEYWORDS = [
+    "penalty", "penalties", "fine", "fines", "sanction", "sanctions",
+    "enforcement", "liable", "liability", "breach", "violation",
+    "must", "shall", "required", "high-risk", "licence suspension",
+    "license suspension", "within 30 days", "within 14 days",
+    "within 24 hours", "within 48 hours", "within 60 seconds",
+]
+
+
+def _derive_risk_signals(text: str) -> list:
+    """Extract risk signal keywords actually present in the document."""
+    tl = text.lower()
+    return [kw for kw in _RISK_SIGNAL_KEYWORDS if kw in tl]
+
+
 def build_context_packet(
     metadata: dict,
     evidence_index: list,
     jurisdiction_scope: dict,
     policy_refs: list,
+    change_history: list,
+    risk_signals: list,
+    filtered_count: int = 0,
 ) -> dict:
     return {
-        "context_packet_id": "CTX-001",
-        "metadata":           metadata,
-        "jurisdiction_scope": jurisdiction_scope,
-        "policy_references":  policy_refs,
-        "evidence_count":     len(evidence_index),
-        "risk_signals":       ["must", "high-risk", "within 48 hours", "penalty", "sanction"],
-        "change_history":     [],
-        "status":             "created",
+        "context_packet_id":   "CTX-001",
+        "metadata":            metadata,
+        "jurisdiction_scope":  jurisdiction_scope,
+        "policy_references":   policy_refs,
+        "evidence_count":      len(evidence_index),
+        "risk_signals":        risk_signals,
+        "change_history":      change_history,
+        "filtered_irrelevant": filtered_count,
+        "status":              "created",
     }
 
 
@@ -227,7 +268,6 @@ def build_evidence_index(text: str, source_file: str) -> list:
         first_line = lines[0].strip()
         body       = "\n".join(lines[1:]).strip()
 
-        # Split body into paragraphs (blank-line separated); fall back to whole body
         raw_paras = [p.strip() for p in re.split(r"\n{2,}", body) if p.strip()]
         if not raw_paras and body:
             raw_paras = [body]
@@ -282,12 +322,13 @@ def _is_irrelevant(text: str) -> bool:
 
 def build_risk_flags(classified_changes: list, effective_date: str) -> list:
     """
-    Flag changes that:
-    - contain penalty / enforcement language
-    - fall within a < 60-day effective window
-    - are structurally irrelevant (headers, label lines)
+    Inspect ALL classified changes (including irrelevant items) and flag those that:
+      - contain penalty / enforcement language
+      - fall within a < 60-day effective window
+      - are structurally irrelevant (headers, label lines)
 
-    Items are flagged, not removed, so downstream agents can decide what to skip.
+    Items are flagged here, not removed from the pipeline. classified_changes.json
+    is separately filtered to exclude irrelevant items.
     """
     days = _days_until(effective_date)
     flags = []
@@ -298,25 +339,25 @@ def build_risk_flags(classified_changes: list, effective_date: str) -> list:
 
         has_penalty   = any(kw in tl for kw in _PENALTY_KEYWORDS)
         short_window  = days is not None and days < _SHORT_WINDOW_DAYS
-        is_irrelevant = _is_irrelevant(ch["text"])
+        is_irrel      = _is_irrelevant(ch["text"])
         high_impact   = ch["change_type"] == "new_requirement" and (has_penalty or short_window)
 
-        if not (has_penalty or short_window or is_irrelevant or high_impact):
+        if not (has_penalty or short_window or is_irrel or high_impact):
             continue
 
         flags.append({
-            "flag_id":           make_id("FLAG", counter),
-            "classified_id":     ch["classified_id"],
-            "evidence_id":       ch["evidence_id"],
-            "source_section":    ch["source_section"],
-            "text":              ch["text"],
-            "change_type":       ch["change_type"],
-            "penalty_risk":      has_penalty,
-            "short_window":      short_window,
-            "days_to_deadline":  days,
-            "is_irrelevant":     is_irrelevant,
-            "high_impact":       high_impact,
-            "flagged_at":        timestamp(),
+            "flag_id":          make_id("FLAG", counter),
+            "classified_id":    ch["classified_id"],
+            "evidence_id":      ch["evidence_id"],
+            "source_section":   ch["source_section"],
+            "text":             ch["text"],
+            "change_type":      ch["change_type"],
+            "penalty_risk":     has_penalty,
+            "short_window":     short_window,
+            "days_to_deadline": days,
+            "is_irrelevant":    is_irrel,
+            "high_impact":      high_impact,
+            "flagged_at":       timestamp(),
         })
         counter += 1
 
@@ -334,20 +375,30 @@ def run():
     source_label = f"input/{reg_file.name}"
     text         = _load_text(reg_file)
 
-    # Step 3 first — evidence index is needed by all other steps
-    evidence_index      = build_evidence_index(text, source_label)
+    # Step 3 — evidence index (needed by all other steps)
+    evidence_index = build_evidence_index(text, source_label)
 
-    # Step 1 — classify every sentence in the evidence index
-    classified_changes  = build_classified_changes(evidence_index)
+    # Step 1 — classify every sentence (all items, including irrelevant)
+    all_classified = build_classified_changes(evidence_index)
 
-    # Step 2 — build context packet with policy refs + jurisdiction scope
-    metadata            = _extract_metadata(text, source_label)
-    jurisdiction_scope  = _load_jurisdiction_scope()
-    policy_refs         = _load_policy_references()
-    context_packet      = build_context_packet(metadata, evidence_index, jurisdiction_scope, policy_refs)
+    # Filter irrelevant items from the output — they appear only in risk_flags
+    classified_changes = [c for c in all_classified if not _is_irrelevant(c["text"])]
+    filtered_count = len(all_classified) - len(classified_changes)
 
-    # Step 4 — flag risks and irrelevant items
-    risk_flags          = build_risk_flags(classified_changes, metadata.get("effective_date", ""))
+    # Step 2 — build context packet
+    metadata           = _extract_metadata(text, source_label)
+    jurisdiction_scope = _load_jurisdiction_scope()
+    policy_refs        = _load_policy_references()
+    change_history     = _load_change_history()
+    risk_signals       = _derive_risk_signals(text)
+
+    context_packet = build_context_packet(
+        metadata, evidence_index, jurisdiction_scope, policy_refs,
+        change_history, risk_signals, filtered_count,
+    )
+
+    # Step 4 — flag risks (inspects ALL items, including irrelevant)
+    risk_flags = build_risk_flags(all_classified, metadata.get("effective_date", ""))
 
     write_json(OUTPUT_DIR / "context_packet.json",     context_packet)
     write_json(OUTPUT_DIR / "evidence_index.json",     evidence_index)
@@ -355,8 +406,10 @@ def run():
     write_json(OUTPUT_DIR / "risk_flags.json",         risk_flags)
 
     print(f"[agent_a] Evidence sections  : {len(evidence_index)}")
-    print(f"[agent_a] Classified changes : {len(classified_changes)}")
+    print(f"[agent_a] Classified changes : {len(classified_changes)} (filtered {filtered_count} irrelevant)")
     print(f"[agent_a] Risk flags         : {len(risk_flags)}")
+    print(f"[agent_a] Risk signals found : {risk_signals}")
+    print(f"[agent_a] Prior runs in hist : {len(change_history)}")
 
     return context_packet, evidence_index, classified_changes, risk_flags
 

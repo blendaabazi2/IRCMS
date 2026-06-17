@@ -1,6 +1,6 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-15T20:52:23.892025Z",
+  "generated_at": "2026-06-17T09:30:28.752497Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
   "total_assessments": 5,
@@ -33,15 +33,15 @@
       "headcount_affected": 25,
       "dependency_systems": [],
       "priority": "Critical",
-      "impact_summary": "The General gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 15 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The General gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": true,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T20:52:23.886039Z",
+        "analyzed_at": "2026-06-17T09:30:27.726638Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 15
+        "days_to_deadline": 13
       }
     },
     {
@@ -70,15 +70,15 @@
         "AML Monitoring System"
       ],
       "priority": "Critical",
-      "impact_summary": "The Monitoring gap (GAP-002) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 15 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
+      "impact_summary": "The Monitoring gap (GAP-002) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 13 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T20:52:23.888034Z",
+        "analyzed_at": "2026-06-17T09:30:28.022991Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 15
+        "days_to_deadline": 13
       }
     },
     {
@@ -97,15 +97,15 @@
       "headcount_affected": 25,
       "dependency_systems": [],
       "priority": "Critical",
-      "impact_summary": "The General gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 15 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The General gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": true,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T20:52:23.888034Z",
+        "analyzed_at": "2026-06-17T09:30:28.259606Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 15
+        "days_to_deadline": 13
       }
     },
     {
@@ -134,15 +134,15 @@
         "AML Monitoring System"
       ],
       "priority": "Critical",
-      "impact_summary": "The Monitoring gap (GAP-004) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 15 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
+      "impact_summary": "The Monitoring gap (GAP-004) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 13 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T20:52:23.890029Z",
+        "analyzed_at": "2026-06-17T09:30:28.516327Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 15
+        "days_to_deadline": 13
       }
     },
     {
@@ -161,15 +161,15 @@
       "headcount_affected": 25,
       "dependency_systems": [],
       "priority": "Critical",
-      "impact_summary": "The General gap (GAP-005) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 15 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The General gap (GAP-005) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": true,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-15T20:52:23.892025Z",
+        "analyzed_at": "2026-06-17T09:30:28.752448Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
-        "days_to_deadline": 15
+        "days_to_deadline": 13
       }
     }
   ]

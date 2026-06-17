@@ -1,6 +1,6 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-15T20:52:23.419287Z",
+  "generated_at": "2026-06-17T09:30:26.580479Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
   "total_gaps": 5,
@@ -56,7 +56,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T20:52:23.408316Z",
+        "analyzed_at": "2026-06-17T09:30:25.493373Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -102,7 +102,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T20:52:23.414310Z",
+        "analyzed_at": "2026-06-17T09:30:25.765412Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -148,7 +148,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T20:52:23.416302Z",
+        "analyzed_at": "2026-06-17T09:30:26.015624Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -194,7 +194,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T20:52:23.418290Z",
+        "analyzed_at": "2026-06-17T09:30:26.258782Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -240,7 +240,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-15T20:52:23.419287Z",
+        "analyzed_at": "2026-06-17T09:30:26.580452Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
