@@ -8,18 +8,7 @@ Responsibilities:
 """
 
 import pandas as pd
-from agents.utils import INPUT_DIR, OUTPUT_DIR, read_json, write_json, make_id, timestamp
-
-# Severity → effort estimate
-_EFFORT_MAP = {"Critical": "High", "High": "High", "Medium": "Medium", "Low": "Low"}
-
-# Severity → evidence requirements
-_EVIDENCE_REQ = {
-    "Critical": ["Policy document", "System audit log", "Legal sign-off", "Board approval"],
-    "High":     ["Policy document", "System audit log", "Manager sign-off"],
-    "Medium":   ["Policy document", "Peer review sign-off"],
-    "Low":      ["Policy document"],
-}
+from agents.utils import INPUT_DIR, OUTPUT_DIR, read_json, write_json, make_id, timestamp, load_policy_pack
 
 
 def _extract_gaps(raw) -> list:
@@ -62,8 +51,7 @@ def _detect_cross_jurisdiction_overlap(gap: dict, all_gaps: list, scope_jurisdic
         or gap.get("requirement", "")
     ).lower()
 
-    cross_border_keywords = ["cross-border", "international", "global", "multi-jurisdiction",
-                              "third country", "passporting", "mutual recognition"]
+    cross_border_keywords = load_policy_pack()["control_mapping"]["cross_border_keywords"]
     text_signals_overlap = any(kw in req_text for kw in cross_border_keywords)
 
     if text_signals_overlap and len(scope_jurisdictions) > 1:
@@ -128,12 +116,13 @@ def run():
         )
 
         # ── 4. Effort estimate ────────────────────────────────────────────────
-        # Prefer Agent D's remediation_complexity; fall back to severity map
+        # Prefer Agent D's remediation_complexity; fall back to pack severity map
+        cm = load_policy_pack()["control_mapping"]
         impact_complexity = impact_by_gap.get(gap_id, {}).get("remediation_complexity")
-        effort_estimate   = impact_complexity or _EFFORT_MAP.get(severity, "Medium")
+        effort_estimate   = impact_complexity or cm["effort_by_severity"].get(severity, "Medium")
 
         # ── 5. Evidence requirements (what artefacts are needed to close gap) ─
-        evidence_requirements = _EVIDENCE_REQ.get(severity, ["Policy document"])
+        evidence_requirements = cm["evidence_requirements_by_severity"].get(severity, ["Policy document"])
 
         # ── 6. Cross-jurisdiction overlap ─────────────────────────────────────
         overlap_info = _detect_cross_jurisdiction_overlap(gap, gaps, scope_jurisdictions)

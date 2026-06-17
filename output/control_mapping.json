@@ -3,25 +3,25 @@
     "mapping_id": "MAP-001",
     "gap_id": "GAP-001",
     "change_id": "CHG-001",
-    "control_id": "NEW-CTRL-001",
-    "control_name": "New General Control",
-    "mapping_status": "New control required",
-    "owner": "Unknown",
+    "control_id": "CTRL-001",
+    "control_name": "KYC Periodic Review",
+    "mapping_status": "Existing control mapped",
+    "owner": "Compliance Team",
     "evidence_id": "EV-001",
-    "recommendation": "Design and implement a new control; assign a dedicated owner",
-    "effort_estimate": "High",
+    "recommendation": "Update existing control to meet new regulatory requirement",
+    "effort_estimate": "Medium",
     "evidence_requirements": [
       "Policy document",
       "System audit log",
       "Manager sign-off"
     ],
-    "suggested_owner": "Unknown",
+    "suggested_owner": "Compliance Team",
     "cross_jurisdiction_overlap": false,
     "jurisdictions_affected": [],
     "overlap_note": "No cross-jurisdiction overlap detected",
     "metadata": {
       "mapped_by": "agent_e_control_mapping",
-      "mapped_at": "2026-06-17T09:30:28.773391Z",
+      "mapped_at": "2026-06-17T11:27:51.890418Z",
       "scope": [
         "EU"
       ]
@@ -48,7 +48,7 @@
     "overlap_note": "No cross-jurisdiction overlap detected",
     "metadata": {
       "mapped_by": "agent_e_control_mapping",
-      "mapped_at": "2026-06-17T09:30:28.774683Z",
+      "mapped_at": "2026-06-17T11:27:51.893050Z",
       "scope": [
         "EU"
       ]
@@ -58,25 +58,25 @@
     "mapping_id": "MAP-003",
     "gap_id": "GAP-003",
     "change_id": "CHG-003",
-    "control_id": "NEW-CTRL-003",
-    "control_name": "New General Control",
-    "mapping_status": "New control required",
-    "owner": "Unknown",
+    "control_id": "CTRL-001",
+    "control_name": "KYC Periodic Review",
+    "mapping_status": "Existing control mapped",
+    "owner": "Compliance Team",
     "evidence_id": "EV-003",
-    "recommendation": "Design and implement a new control; assign a dedicated owner",
-    "effort_estimate": "High",
+    "recommendation": "Update existing control to meet new regulatory requirement",
+    "effort_estimate": "Medium",
     "evidence_requirements": [
       "Policy document",
       "System audit log",
       "Manager sign-off"
     ],
-    "suggested_owner": "Unknown",
+    "suggested_owner": "Compliance Team",
     "cross_jurisdiction_overlap": false,
     "jurisdictions_affected": [],
     "overlap_note": "No cross-jurisdiction overlap detected",
     "metadata": {
       "mapped_by": "agent_e_control_mapping",
-      "mapped_at": "2026-06-17T09:30:28.775408Z",
+      "mapped_at": "2026-06-17T11:27:51.896051Z",
       "scope": [
         "EU"
       ]
@@ -103,7 +103,7 @@
     "overlap_note": "No cross-jurisdiction overlap detected",
     "metadata": {
       "mapped_by": "agent_e_control_mapping",
-      "mapped_at": "2026-06-17T09:30:28.776288Z",
+      "mapped_at": "2026-06-17T11:27:51.898399Z",
       "scope": [
         "EU"
       ]
@@ -113,25 +113,24 @@
     "mapping_id": "MAP-005",
     "gap_id": "GAP-005",
     "change_id": "CHG-005",
-    "control_id": "NEW-CTRL-005",
-    "control_name": "New General Control",
-    "mapping_status": "New control required",
-    "owner": "Unknown",
+    "control_id": "CTRL-002",
+    "control_name": "Transaction Monitoring",
+    "mapping_status": "Existing control mapped",
+    "owner": "AML Team",
     "evidence_id": "EV-005",
-    "recommendation": "Design and implement a new control; assign a dedicated owner",
-    "effort_estimate": "High",
+    "recommendation": "Update existing control to meet new regulatory requirement",
+    "effort_estimate": "Low",
     "evidence_requirements": [
       "Policy document",
-      "System audit log",
-      "Manager sign-off"
+      "Peer review sign-off"
     ],
-    "suggested_owner": "Unknown",
+    "suggested_owner": "AML Team",
     "cross_jurisdiction_overlap": false,
     "jurisdictions_affected": [],
     "overlap_note": "No cross-jurisdiction overlap detected",
     "metadata": {
       "mapped_by": "agent_e_control_mapping",
-      "mapped_at": "2026-06-17T09:30:28.776948Z",
+      "mapped_at": "2026-06-17T11:27:51.900580Z",
       "scope": [
         "EU"
       ]

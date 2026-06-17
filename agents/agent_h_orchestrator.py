@@ -6,7 +6,7 @@ Responsibilities:
 3. Idempotency & Audit Readiness - deterministic output across re-runs
 """
 
-from agents.utils import OUTPUT_DIR, read_json, write_json, write_markdown, timestamp
+from agents.utils import OUTPUT_DIR, read_json, write_json, write_markdown, timestamp, load_policy_pack
 
 # Severity ordering for deterministic sorting (lower index = higher priority)
 _SEVERITY_ORDER = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
@@ -16,7 +16,8 @@ _PRIORITY_ORDER = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
 # ── 1. Exception Categorization ──────────────────────────────────────────────
 
 def categorize_exception(gap: dict, impact: dict, mapping: dict) -> str:
-    """Rule-based routing logic (Orchestrator + Judge)."""
+    """Rule-based routing logic (Orchestrator + Judge). Routes driven by policy_pack.yaml."""
+    routing    = load_policy_pack()["exception_routing"]
     severity   = gap.get("severity", "Low")
     gap_status = gap.get("gap_status", "")
     escalation = impact.get("escalation_required", False)
@@ -24,14 +25,14 @@ def categorize_exception(gap: dict, impact: dict, mapping: dict) -> str:
     overlap    = mapping.get("cross_jurisdiction_overlap", False)
 
     if severity in ("Critical", "High") and escalation:
-        return "Compliance Lead Escalation"
+        return routing["high_risk"]
     if overlap:
-        return "Legal Review"
+        return routing["cross_jurisdiction"]
     if new_ctrl:
-        return "Control Owner Review"
+        return routing["missing_control"]
     if gap_status == "Needs Review":
-        return "Legal Review"
-    return "Policy Owner Remediation"
+        return routing["low_confidence"]
+    return routing["default"]
 
 
 # ── 2. Deduplication ─────────────────────────────────────────────────────────
@@ -232,6 +233,20 @@ def _as_list(raw, list_key: str) -> list:
     return raw.get(list_key, [])
 
 
+# ── Routing summary ───────────────────────────────────────────────────────────
+
+def _build_routing_summary(gaps: list, impacts: dict, mappings: dict) -> dict:
+    """
+    Count gaps per routing category dynamically.
+    New routes added to exception_routing in policy_pack.yaml appear here automatically.
+    """
+    summary: dict[str, int] = {}
+    for g in gaps:
+        route = categorize_exception(g, impacts.get(g["gap_id"], {}), mappings.get(g["gap_id"], {}))
+        summary[route] = summary.get(route, 0) + 1
+    return summary
+
+
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 def run():
@@ -271,28 +286,7 @@ def run():
         "cross_jurisdiction_overlaps": metrics["cross_jurisdiction_overlaps"],
         "approval_required":  metrics["high_risk_gaps"] > 0,
         "recommended_action": "Approve remediation plan and assign owners per routing",
-        "routing_summary": {
-            "Compliance Lead Escalation": sum(
-                1 for g in gaps
-                if categorize_exception(g, impacts.get(g["gap_id"], {}), mappings.get(g["gap_id"], {}))
-                == "Compliance Lead Escalation"
-            ),
-            "Legal Review": sum(
-                1 for g in gaps
-                if categorize_exception(g, impacts.get(g["gap_id"], {}), mappings.get(g["gap_id"], {}))
-                == "Legal Review"
-            ),
-            "Control Owner Review": sum(
-                1 for g in gaps
-                if categorize_exception(g, impacts.get(g["gap_id"], {}), mappings.get(g["gap_id"], {}))
-                == "Control Owner Review"
-            ),
-            "Policy Owner Remediation": sum(
-                1 for g in gaps
-                if categorize_exception(g, impacts.get(g["gap_id"], {}), mappings.get(g["gap_id"], {}))
-                == "Policy Owner Remediation"
-            ),
-        },
+        "routing_summary": _build_routing_summary(gaps, impacts, mappings),
         "metrics_reference":  "output/metrics.json",
         "generated_at":       timestamp(),
     }

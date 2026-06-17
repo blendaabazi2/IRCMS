@@ -28,6 +28,7 @@ import yaml
 from agents.utils import (
     INPUT_DIR, OUTPUT_DIR,
     read_text_file, write_json, make_id, stable_hash, timestamp,
+    load_policy_pack,
 )
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -206,19 +207,11 @@ def _load_change_history() -> list:
         return []
 
 
-_RISK_SIGNAL_KEYWORDS = [
-    "penalty", "penalties", "fine", "fines", "sanction", "sanctions",
-    "enforcement", "liable", "liability", "breach", "violation",
-    "must", "shall", "required", "high-risk", "licence suspension",
-    "license suspension", "within 30 days", "within 14 days",
-    "within 24 hours", "within 48 hours", "within 60 seconds",
-]
-
-
 def _derive_risk_signals(text: str) -> list:
     """Extract risk signal keywords actually present in the document."""
+    keywords = load_policy_pack()["risk_detection"]["risk_signal_keywords"]
     tl = text.lower()
-    return [kw for kw in _RISK_SIGNAL_KEYWORDS if kw in tl]
+    return [kw for kw in keywords if kw in tl]
 
 
 def build_context_packet(
@@ -293,18 +286,11 @@ def build_evidence_index(text: str, source_file: str) -> list:
 # 4. RISK DETECTION & FILTERING
 # ═══════════════════════════════════════════════════════════════════════════════
 
-_PENALTY_KEYWORDS = [
-    "penalty", "penalties", "fine", "fines", "sanction", "sanctions",
-    "enforcement", "liable", "liability", "breach", "violation",
-]
-
 _IRRELEVANT_PATTERNS = [
     r"^\s*$",
     r"^section\s+[\d.]+\s*[-–]",
     r"^(regulatory publication|jurisdiction|regulator|effective date)\s*:",
 ]
-
-_SHORT_WINDOW_DAYS = 60
 
 
 def _days_until(date_str: str) -> Optional[int]:
@@ -324,12 +310,16 @@ def build_risk_flags(classified_changes: list, effective_date: str) -> list:
     """
     Inspect ALL classified changes (including irrelevant items) and flag those that:
       - contain penalty / enforcement language
-      - fall within a < 60-day effective window
+      - fall within the configured short_window_days effective window
       - are structurally irrelevant (headers, label lines)
 
     Items are flagged here, not removed from the pipeline. classified_changes.json
     is separately filtered to exclude irrelevant items.
     """
+    rd = load_policy_pack()["risk_detection"]
+    penalty_keywords   = rd["penalty_keywords"]
+    short_window_days  = rd["short_window_days"]
+
     days = _days_until(effective_date)
     flags = []
     counter = 1
@@ -337,8 +327,8 @@ def build_risk_flags(classified_changes: list, effective_date: str) -> list:
     for ch in classified_changes:
         tl = ch["text"].lower()
 
-        has_penalty   = any(kw in tl for kw in _PENALTY_KEYWORDS)
-        short_window  = days is not None and days < _SHORT_WINDOW_DAYS
+        has_penalty   = any(kw in tl for kw in penalty_keywords)
+        short_window  = days is not None and days < short_window_days
         is_irrel      = _is_irrelevant(ch["text"])
         high_impact   = ch["change_type"] == "new_requirement" and (has_penalty or short_window)
 

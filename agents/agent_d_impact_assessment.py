@@ -17,7 +17,8 @@ import pandas as pd
 from pydantic import BaseModel, Field
 
 from agents.utils import (
-    INPUT_DIR, OUTPUT_DIR, read_json, write_json, make_id, timestamp
+    INPUT_DIR, OUTPUT_DIR, read_json, write_json, make_id, timestamp,
+    load_policy_pack,
 )
 
 
@@ -150,7 +151,7 @@ Scoring guide:
 - system_impact_score: 1=config change only, 2=single system update, 3=multiple system updates,
   4=cross-department process change, 5=core infrastructure or customer-facing change
 - regulatory_risk_score: 0=no risk, 100=immediate enforcement action / licence risk
-- deadline_risk: Critical=<30 days, High=30-60 days, Medium=60-90 days, Low=>90 days
+- deadline_risk: Critical=<{critical_days} days, High={critical_days}-{high_days} days, Medium={high_days}-{medium_days} days, Low=>{medium_days} days
 - headcount_affected: total staff who must change workflows or be retrained
 - escalation_required: true when deadline_risk is Critical OR (High AND system_impact_score >= 4)
 """
@@ -167,48 +168,48 @@ def _days_to_deadline(effective_date: str) -> int:
         return 90
 
 
-def _priority_from_scores(reg_risk: int, deadline_risk: str) -> str:
-    if reg_risk >= 85 or deadline_risk == "Critical":
+def _deadline_risk_from_days(days: int) -> str:
+    buckets = load_policy_pack()["impact_assessment"]["deadline_risk_buckets"]
+    if days < buckets["critical_days"]:
         return "Critical"
-    if reg_risk >= 65 or deadline_risk == "High":
+    if days < buckets["high_days"]:
         return "High"
-    if reg_risk >= 45:
+    if days < buckets["medium_days"]:
+        return "Medium"
+    return "Low"
+
+
+def _priority_from_scores(reg_risk: int, deadline_risk: str) -> str:
+    thresholds = load_policy_pack()["impact_assessment"]["priority_thresholds"]
+    if reg_risk >= thresholds["critical"] or deadline_risk == "Critical":
+        return "Critical"
+    if reg_risk >= thresholds["high"] or deadline_risk == "High":
+        return "High"
+    if reg_risk >= thresholds["medium"]:
         return "Medium"
     return "Low"
 
 
 def _rule_based_impact(gap: dict, process: Optional[dict], days: int) -> dict:
     """Deterministic fallback used when Claude API is unavailable."""
+    pack = load_policy_pack()["impact_assessment"]
     severity   = gap.get("severity", "Medium")
     gap_status = gap.get("gap_status", "Needs Review")
     effort     = gap.get("remediation", {}).get("effort_estimate", "Medium")
 
-    # System impact score
-    score_map = {"Critical": 5, "High": 4, "Medium": 3, "Low": 2}
-    sys_score = score_map.get(severity, 3)
+    sys_score = pack["fallback_system_impact"].get(severity, 3)
     if gap_status == "Partial":
         sys_score = max(1, sys_score - 1)
 
-    # Regulatory risk score
-    reg_risk = {"Critical": 90, "High": 75, "Medium": 50, "Low": 25}.get(severity, 50)
+    reg_risk = pack["fallback_regulatory_risk"].get(severity, 50)
+    deadline_risk = _deadline_risk_from_days(days)
 
-    # Deadline risk
-    if days < 30:
-        deadline_risk = "Critical"
-    elif days < 60:
-        deadline_risk = "High"
-    elif days < 90:
-        deadline_risk = "Medium"
-    else:
-        deadline_risk = "Low"
-
-    # Business units and headcount
     bu = process.get("business_unit", "Unknown") if process else "Unknown"
-    headcount = {"High": 25, "Medium": 12, "Low": 5}.get(severity, 10)
-
+    headcount = pack["fallback_headcount"].get(severity, 10)
     dep_sys = [process.get("system", "Unknown")] if process else []
 
     priority = _priority_from_scores(reg_risk, deadline_risk)
+    escalation_threshold = pack["escalation_system_score_threshold"]
 
     area = gap.get("policy_area", "Unknown")
     impact_summary = (
@@ -228,7 +229,7 @@ def _rule_based_impact(gap: dict, process: Optional[dict], days: int) -> dict:
         "dependency_systems": dep_sys,
         "impact_summary": impact_summary,
         "human_review_required": True,
-        "escalation_required": deadline_risk in ("Critical", "High") and sys_score >= 4,
+        "escalation_required": deadline_risk in ("Critical", "High") and sys_score >= escalation_threshold,
         "_source": "fallback",
     }
 
@@ -244,6 +245,7 @@ def _call_claude(
 ) -> dict:
     proc = process or {}
     all_bus = ", ".join(jurisdiction_scope.get("business_units", []))
+    buckets = load_policy_pack()["impact_assessment"]["deadline_risk_buckets"]
 
     prompt = _PROMPT_TEMPLATE.format(
         gap_id=gap["gap_id"],
@@ -263,6 +265,9 @@ def _call_claude(
         owner=proc.get("owner", "Unknown"),
         all_business_units=all_bus,
         jurisdiction=jurisdiction_scope.get("jurisdictions", ["EU"])[0],
+        critical_days=buckets["critical_days"],
+        high_days=buckets["high_days"],
+        medium_days=buckets["medium_days"],
     )
 
     try:
@@ -285,15 +290,12 @@ def _call_claude(
 
 # ── Process matching ─────────────────────────────────────────────────────────
 
-_AREA_KEYWORDS = {
-    "KYC":        ["kyc", "customer due diligence", "customer"],
-    "Monitoring":  ["transaction", "monitoring", "suspicious"],
-    "Audit":       ["audit", "evidence", "retention", "document"],
-}
-
-
 def _match_process(policy_area: str, process_df: pd.DataFrame) -> Optional[dict]:
-    keywords = _AREA_KEYWORDS.get(policy_area, [policy_area.lower()])
+    categories = load_policy_pack()["risk_categories"]
+    keywords = next(
+        (cat["keywords"] for cat in categories if cat["id"] == policy_area),
+        [policy_area.lower()],
+    )
     for kw in keywords:
         mask = process_df["process_name"].str.lower().str.contains(kw, na=False)
         if mask.any():

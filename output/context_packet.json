@@ -7,7 +7,7 @@
     "effective_date": "2026-07-01",
     "document_type": "Regulatory Publication",
     "source_file": "input/regulation.txt",
-    "processed_at": "2026-06-17T09:30:24.013091Z"
+    "processed_at": "2026-06-17T11:27:48.948650Z"
   },
   "jurisdiction_scope": {
     "project_scope": "EU regulatory change management",
@@ -60,12 +60,11 @@
     "licence suspension",
     "within 30 days",
     "within 14 days",
-    "within 24 hours",
-    "within 60 seconds"
+    "within 24 hours"
   ],
   "change_history": [
     {
-      "run_at": "2026-06-17T09:27:11.366921Z",
+      "run_at": "2026-06-17T11:07:27.722923Z",
       "document": "AML Enforcement Directive 2026",
       "jurisdiction": "EU",
       "evidence_count": 5,

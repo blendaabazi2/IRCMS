@@ -27,6 +27,7 @@ from pathlib import Path
 from agents.utils import (
     INPUT_DIR, OUTPUT_DIR,
     read_json, write_json, make_id, timestamp,
+    load_policy_pack,
 )
 
 BASE_DIR = Path(__file__).resolve().parents[1]
@@ -223,18 +224,20 @@ def _score_confidence(sentence: str) -> tuple[float, bool, list[str]]:
     Score extraction confidence for a single requirement sentence.
 
     Factors:
-      + Obligation strength (must/shall → +0.15, required to → +0.12, etc.)
-      + Temporal specificity (within N days/hours → +0.06)
-      + Sentence length / detail (>8 words → +0.04)
+      + Obligation strength (must/shall → boost, required to → boost, etc.)
+      + Temporal specificity (within N days/hours → temporal_marker_boost)
+      + Sentence length / detail (>8 words → sentence_length_boost)
       - Ambiguous language (may / could / where applicable → penalty per flag)
 
+    All numeric thresholds are driven by policy_pack.yaml change_extraction.confidence.
     Returns:
-      confidence            : float in [0.30, 0.98]
-      legal_review_required : True when confidence < 0.80 OR any ambiguity found
+      confidence            : float clamped to [min_score, max_score]
+      legal_review_required : True when confidence < legal_review_threshold OR ambiguity found
       ambiguity_flags       : list of human-readable ambiguity descriptions
     """
+    cfg = load_policy_pack()["change_extraction"]["confidence"]
     tl = sentence.lower()
-    score = 0.70
+    score = cfg["base_score"]
 
     # Obligation strength — apply only the first (strongest) match
     for pattern, boost in _OBLIGATION_CHECKS:
@@ -244,11 +247,11 @@ def _score_confidence(sentence: str) -> tuple[float, bool, list[str]]:
 
     # Temporal specificity boost
     if any(re.search(p, tl) for p in _TEMPORAL_MARKERS):
-        score += 0.06
+        score += cfg["temporal_marker_boost"]
 
     # Sentence length / specificity boost
     if len(sentence.split()) > 8:
-        score += 0.04
+        score += cfg["sentence_length_boost"]
 
     # Ambiguity penalties — accumulate all matching flags
     ambiguity_flags = []
@@ -257,8 +260,8 @@ def _score_confidence(sentence: str) -> tuple[float, bool, list[str]]:
             score -= penalty
             ambiguity_flags.append(label)
 
-    score = round(max(0.30, min(score, 0.98)), 2)
-    legal_review = score < 0.80 or len(ambiguity_flags) > 0
+    score = round(max(cfg["min_score"], min(score, cfg["max_score"])), 2)
+    legal_review = score < cfg["legal_review_threshold"] or len(ambiguity_flags) > 0
 
     return score, legal_review, ambiguity_flags
 

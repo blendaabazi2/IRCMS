@@ -1,32 +1,32 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-17T09:30:26.580479Z",
+  "generated_at": "2026-06-17T11:27:50.490352Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
   "total_gaps": 5,
   "gap_summary": {
     "Critical": 0,
-    "High": 3,
-    "Medium": 2,
+    "High": 2,
+    "Medium": 3,
     "Low": 0,
-    "Non-compliant": 3,
+    "Non-compliant": 2,
     "Partial": 0,
-    "Needs Review": 2,
+    "Needs Review": 3,
     "Compliant": 0
   },
   "gaps": [
     {
       "gap_id": "GAP-001",
       "change_id": "CHG-001",
-      "policy_area": "General",
+      "policy_area": "KYC",
       "gap_status": "Non-compliant",
       "severity": "High",
       "confidence": 0.7,
-      "gap_description": "No internal policy exists for this regulatory requirement.",
+      "gap_description": "Time-period mismatch: regulation requires 30 but current policy specifies 24.",
       "current_policy": {
-        "policy_id": "N/A",
-        "text": "No matching policy found",
-        "owner": "Unknown",
+        "policy_id": "POL-001",
+        "text": "KYC review for high-risk customers is performed every 24 months",
+        "owner": "Compliance Team",
         "jurisdiction": "EU"
       },
       "required_change": {
@@ -43,20 +43,20 @@
         "content_hash": "bbb37d24a0d3"
       },
       "remediation": {
-        "recommended_action": "Draft a new policy to satisfy: Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding.",
-        "effort_estimate": "High",
-        "suggested_owner": "Unknown",
+        "recommended_action": "Update 'POL-001' to change the retention/review period from 24 to 30 as required by Section 2.1 - Enhanced Due Diligence for High-Risk Clients.",
+        "effort_estimate": "Medium",
+        "suggested_owner": "Compliance Team",
         "target_deadline": "2026-06-01"
       },
       "human_oversight": {
-        "review_required": true,
-        "review_reason": "No existing policy — legal drafting required before remediation can start.",
+        "review_required": false,
+        "review_reason": "",
         "open_questions": [],
         "flagged_ambiguities": []
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-17T09:30:25.493373Z",
+        "analyzed_at": "2026-06-17T11:27:50.477307Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -102,7 +102,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-17T09:30:25.765412Z",
+        "analyzed_at": "2026-06-17T11:27:50.480789Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -110,15 +110,15 @@
     {
       "gap_id": "GAP-003",
       "change_id": "CHG-003",
-      "policy_area": "General",
+      "policy_area": "KYC",
       "gap_status": "Non-compliant",
       "severity": "High",
       "confidence": 0.7,
-      "gap_description": "No internal policy exists for this regulatory requirement.",
+      "gap_description": "Time-period mismatch: regulation requires 14 but current policy specifies 24.",
       "current_policy": {
-        "policy_id": "N/A",
-        "text": "No matching policy found",
-        "owner": "Unknown",
+        "policy_id": "POL-001",
+        "text": "KYC review for high-risk customers is performed every 24 months",
+        "owner": "Compliance Team",
         "jurisdiction": "EU"
       },
       "required_change": {
@@ -135,20 +135,20 @@
         "content_hash": "bcd14e5e156f"
       },
       "remediation": {
-        "recommended_action": "Draft a new policy to satisfy: Institutions must verify and record beneficial ownership for all corporate clients within 14 days.",
-        "effort_estimate": "High",
-        "suggested_owner": "Unknown",
+        "recommended_action": "Update 'POL-001' to change the retention/review period from 24 to 14 as required by Section 4.7 - Beneficial Ownership Verification.",
+        "effort_estimate": "Medium",
+        "suggested_owner": "Compliance Team",
         "target_deadline": "2026-06-01"
       },
       "human_oversight": {
-        "review_required": true,
-        "review_reason": "No existing policy — legal drafting required before remediation can start.",
+        "review_required": false,
+        "review_reason": "",
         "open_questions": [],
         "flagged_ambiguities": []
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-17T09:30:26.015624Z",
+        "analyzed_at": "2026-06-17T11:27:50.483026Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -194,7 +194,7 @@
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-17T09:30:26.258782Z",
+        "analyzed_at": "2026-06-17T11:27:50.486383Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }
@@ -202,15 +202,15 @@
     {
       "gap_id": "GAP-005",
       "change_id": "CHG-005",
-      "policy_area": "General",
-      "gap_status": "Non-compliant",
-      "severity": "High",
+      "policy_area": "Monitoring",
+      "gap_status": "Needs Review",
+      "severity": "Medium",
       "confidence": 0.7,
-      "gap_description": "No internal policy exists for this regulatory requirement.",
+      "gap_description": "Policy exists but semantic alignment with the requirement needs manual verification.",
       "current_policy": {
-        "policy_id": "N/A",
-        "text": "No matching policy found",
-        "owner": "Unknown",
+        "policy_id": "POL-002",
+        "text": "Suspicious transactions are reviewed weekly",
+        "owner": "AML Team",
         "jurisdiction": "EU"
       },
       "required_change": {
@@ -227,20 +227,20 @@
         "content_hash": "7ec99d29fe5b"
       },
       "remediation": {
-        "recommended_action": "Draft a new policy to satisfy: All compliance staff must complete AML certification training every 6 months.",
-        "effort_estimate": "High",
-        "suggested_owner": "Unknown",
+        "recommended_action": "Perform a manual policy review against the regulatory requirement text.",
+        "effort_estimate": "Low",
+        "suggested_owner": "AML Team",
         "target_deadline": "2026-06-01"
       },
       "human_oversight": {
         "review_required": true,
-        "review_reason": "No existing policy — legal drafting required before remediation can start.",
+        "review_reason": "Rule-based fallback could not determine gap with confidence — human review required.",
         "open_questions": [],
         "flagged_ambiguities": []
       },
       "metadata": {
         "analyzed_by": "agent_c_gap_analysis",
-        "analyzed_at": "2026-06-17T09:30:26.580452Z",
+        "analyzed_at": "2026-06-17T11:27:50.490304Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback"
       }

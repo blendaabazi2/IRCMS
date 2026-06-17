@@ -1,37 +1,398 @@
+# ──────────────────────────────────────────────────────────────────────────────
 # IRCMS Policy Pack
-# This file contains configurable rules for risk scoring, review routing, and compliance thresholds.
+# ──────────────────────────────────────────────────────────────────────────────
+# All compliance thresholds, risk categories, scoring rules, and business-unit
+# definitions live here.  Change this file — not agent code — to reconfigure
+# the system for a new jurisdiction, regulatory scope, or tolerance level.
+# ──────────────────────────────────────────────────────────────────────────────
+
+version: "1.0"
+effective_from: "2026-06-17"
+
+# Jurisdictions active by default when no override is provided
+jurisdiction_defaults:
+  - EU
+  - UK
+  - US
+
+
+# ── Risk Categories ────────────────────────────────────────────────────────────
+# Each category drives two things:
+#   1. Agent C _classify_area(): matches requirement text → policy area label
+#   2. Agent D _match_process(): matches policy area → process map row
+# Add/rename categories here; no agent code changes needed.
+
+risk_categories:
+  - id: KYC
+    label: "Know Your Customer"
+    keywords:
+      - kyc
+      - customer due diligence
+      - customer
+      - onboarding
+      - identity verification
+      - beneficial owner
+    default_severity: High
+    compliance_owner: "KYC Operations"
+
+  - id: Monitoring
+    label: "Transaction Monitoring"
+    keywords:
+      - transaction
+      - suspicious
+      - monitoring
+      - aml
+      - anti-money laundering
+      - sar
+      - suspicious activity
+    default_severity: High
+    compliance_owner: "AML / Financial Crime"
+
+  - id: Audit
+    label: "Audit & Record-Keeping"
+    keywords:
+      - audit
+      - evidence
+      - retain
+      - retention
+      - record
+      - document
+      - log
+    default_severity: Medium
+    compliance_owner: "Internal Audit"
+
+  - id: DataPrivacy
+    label: "Data Privacy & Protection"
+    keywords:
+      - data
+      - privacy
+      - gdpr
+      - personal data
+      - breach
+      - consent
+      - data subject
+    default_severity: High
+    compliance_owner: "Data Protection Officer"
+
+  - id: Reporting
+    label: "Regulatory Reporting"
+    keywords:
+      - report
+      - filing
+      - disclosure
+      - submit
+      - notification
+      - regulatory return
+    default_severity: Medium
+    compliance_owner: "Regulatory Reporting Team"
+
+  - id: General
+    label: "General Compliance"
+    keywords: []
+    default_severity: Medium
+    compliance_owner: "Compliance Team"
+
+
+# ── Business Units ─────────────────────────────────────────────────────────────
+# risk_appetite: Low | Medium | High  (lower appetite → stricter escalation)
+
+business_units:
+  - id: Retail_Banking
+    label: "Retail Banking"
+    compliance_owner: "Head of Retail Compliance"
+    risk_appetite: Low
+    headcount: 450
+
+  - id: Corporate_Banking
+    label: "Corporate Banking"
+    compliance_owner: "Head of Corporate Compliance"
+    risk_appetite: Medium
+    headcount: 180
+
+  - id: Compliance
+    label: "Compliance"
+    compliance_owner: "Chief Compliance Officer"
+    risk_appetite: Low
+    headcount: 60
+
+  - id: Technology
+    label: "Technology"
+    compliance_owner: "Head of IT Risk"
+    risk_appetite: Medium
+    headcount: 210
+
+  - id: Operations
+    label: "Operations"
+    compliance_owner: "Head of Operational Risk"
+    risk_appetite: Medium
+    headcount: 320
+
+
+# ── Gap Analysis Rules — Agent C ───────────────────────────────────────────────
+
+gap_analysis:
+
+  # Minimum model confidence below which human review is always flagged
+  human_review_confidence_threshold: 0.80
+
+  # Days before the regulation's effective_date that the remediation deadline is set
+  remediation_lead_days: 30
+
+  # Requirement-text patterns that allow auto-closing a change (no action needed)
+  auto_close_patterns:
+    - "informational guidance"
+    - "no action required"
+    - "clarification only"
+    - "guidance note only"
+
+  # Words in a requirement body that push the fallback severity to High
+  high_risk_language_triggers:
+    - "must"
+    - "within"
+    - "high-risk"
+    - "mandatory"
+    - "shall"
+    - "required to"
+
+  # Deterministic fallback scores used when the Claude API is unavailable.
+  # Keys must match the condition labels checked in _rule_based_gap().
+  fallback_scores:
+    no_policy_exists:
+      gap_status: "Non-compliant"
+      severity: "High"
+      confidence: 0.70
+      effort: "High"
+      human_review_required: true
+      review_reason: "No existing policy — legal drafting required before remediation can start."
+
+    time_period_mismatch:
+      gap_status: "Non-compliant"
+      severity: "Medium"    # bumped to High automatically when high_risk_language is present
+      confidence: 0.70
+      effort: "Medium"
+      human_review_required: false
+      review_reason: ""
+
+    frequency_mismatch:
+      gap_status: "Non-compliant"
+      severity: "High"
+      confidence: 0.70
+      effort: "High"
+      human_review_required: true
+      review_reason: "Frequency increase may require system or workflow changes; human sign-off needed."
+
+    default:
+      gap_status: "Needs Review"
+      severity: "Medium"
+      confidence: 0.70
+      effort: "Low"
+      human_review_required: true
+      review_reason: "Rule-based fallback could not determine gap with confidence — human review required."
+
+
+# ── Impact Assessment Rules — Agent D ─────────────────────────────────────────
+
+impact_assessment:
+
+  # Priority bands: reg_risk score is the primary driver.
+  # deadline_risk Critical/High independently pushes priority up.
+  priority_thresholds:
+    critical: 85    # reg_risk >= 85  OR  deadline_risk == Critical
+    high: 65        # reg_risk >= 65  OR  deadline_risk == High
+    medium: 45      # reg_risk >= 45
+    # below medium → Low
+
+  # Deadline risk buckets (days remaining until effective_date)
+  deadline_risk_buckets:
+    critical_days: 30    # < 30 days  → Critical
+    high_days: 60        # 30–60 days → High
+    medium_days: 90      # 60–90 days → Medium
+    # > 90 days           → Low
+
+  # Auto-escalate when deadline_risk == Critical,
+  # OR when deadline_risk == High AND system_impact_score >= this value
+  escalation_system_score_threshold: 4
+
+  # Fallback scores when Claude is unavailable — keyed by severity label
+  fallback_system_impact:
+    Critical: 5
+    High: 4
+    Medium: 3
+    Low: 2
+
+  fallback_regulatory_risk:
+    Critical: 90
+    High: 75
+    Medium: 50
+    Low: 25
+
+  fallback_headcount:
+    Critical: 50
+    High: 25
+    Medium: 12
+    Low: 5
+
+
+# ── Approval & Escalation Thresholds — Agent H ────────────────────────────────
+
+approval_thresholds:
+
+  board_approval:
+    minimum_severity: "Critical"
+    minimum_regulatory_risk: 85
+
+  senior_management_approval:
+    minimum_severity: "High"
+    minimum_regulatory_risk: 65
+
+  auto_approve:
+    maximum_severity: "Low"
+    maximum_regulatory_risk: 25
+    gap_status_whitelist:
+      - "Compliant"
+
+
+# ── Confidence Thresholds (legacy keys kept for Agent H compatibility) ─────────
 
 confidence_thresholds:
   auto_accept: 0.90
   legal_review: 0.75
   manual_review: 0.60
 
-risk_rules:
-  high_risk_deadline_days: 30
-  medium_risk_deadline_days: 90
-  high_risk_keywords:
+
+# ── Risk Detection — Agent A ───────────────────────────────────────────────────
+
+risk_detection:
+
+  # Days until effective_date below which a change is flagged as a short implementation window
+  short_window_days: 60
+
+  # Keywords that trigger a penalty-risk flag on individual classified changes
+  penalty_keywords:
     - penalty
+    - penalties
     - fine
+    - fines
     - sanction
-    - license
-    - mandatory
+    - sanctions
+    - enforcement
+    - liable
+    - liability
+    - breach
+    - violation
+
+  # Keywords summarised at context-packet level as overall document risk signals
+  risk_signal_keywords:
+    - penalty
+    - penalties
+    - fine
+    - fines
+    - sanction
+    - sanctions
+    - enforcement
+    - liable
+    - liability
+    - breach
+    - violation
     - must
-  medium_risk_keywords:
-    - should
-    - review
-    - update
-    - recommended
+    - shall
+    - required
+    - high-risk
+    - licence suspension
+    - license suspension
+    - within 30 days
+    - within 14 days
+    - within 24 hours
+    - within 48 hours
+
+
+# ── Change Extraction — Agent B ────────────────────────────────────────────────
+
+change_extraction:
+  confidence:
+    base_score: 0.70
+    min_score: 0.30
+    max_score: 0.98
+    temporal_marker_boost: 0.06    # applied when a time-bound phrase is detected
+    sentence_length_boost: 0.04    # applied when sentence word count > 8
+    legal_review_threshold: 0.80   # confidence below this triggers legal_review_required
+
+
+# ── Control Mapping — Agent E ──────────────────────────────────────────────────
+
+control_mapping:
+
+  # Remediation effort estimate by severity (used when Agent D complexity is unavailable)
+  effort_by_severity:
+    Critical: High
+    High: High
+    Medium: Medium
+    Low: Low
+
+  # Artefacts required to close a gap, by severity
+  evidence_requirements_by_severity:
+    Critical:
+      - Policy document
+      - System audit log
+      - Legal sign-off
+      - Board approval
+    High:
+      - Policy document
+      - System audit log
+      - Manager sign-off
+    Medium:
+      - Policy document
+      - Peer review sign-off
+    Low:
+      - Policy document
+
+  # Requirement-text keywords that signal a cross-jurisdiction overlap
+  cross_border_keywords:
+    - cross-border
+    - international
+    - global
+    - multi-jurisdiction
+    - third country
+    - passporting
+    - mutual recognition
+
+
+# ── Exception Routing — Agent H ────────────────────────────────────────────────
+
+exception_routing:
+  high_risk: "Compliance Lead Escalation"       # Critical/High severity + escalation required
+  cross_jurisdiction: "Legal Review"             # cross-jurisdiction overlap detected
+  missing_control: "Control Owner Review"        # no existing control covers the gap
+  low_confidence: "Legal Review"                 # gap_status == Needs Review
+  policy_gap: "Policy Owner Remediation"         # default route
+  default: "Policy Owner Remediation"
+
+
+# ── Jurisdiction-Specific Overrides ───────────────────────────────────────────
 
 jurisdiction_rules:
   EU:
     privacy_required: true
     approval_required_for_high_risk: true
+    mandatory_human_review_regulations:
+      - GDPR
+      - DORA
+      - MiFID II
   US:
     privacy_required: false
     approval_required_for_high_risk: true
+    mandatory_human_review_regulations: []
+  UK:
+    privacy_required: true
+    approval_required_for_high_risk: true
+    mandatory_human_review_regulations:
+      - Basel IV
 
-exception_routing:
-  low_confidence: Legal Review
-  high_risk: Compliance Lead Escalation
-  missing_control: Control Owner Review
-  policy_gap: Policy Owner Remediation
+
+# ── Compliance Rules ───────────────────────────────────────────────────────────
+
+compliance_rules:
+  evidence_retention_years: 7
+  cross_border_notification_jurisdictions:
+    - EU
+    - UK

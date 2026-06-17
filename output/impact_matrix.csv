@@ -1,6 +1,6 @@
 impact_id,gap_id,change_id,policy_area,affected_process,affected_system,business_units_affected,system_impact_score,regulatory_risk_score,remediation_complexity,deadline_risk,headcount_affected,priority,escalation_required,analysis_source
-IMP-001,GAP-001,CHG-001,General,Unknown,Unknown,Unknown,4,75,High,Critical,25,Critical,True,fallback
+IMP-001,GAP-001,CHG-001,KYC,Customer Due Diligence,KYC Platform,Risk Operations,4,75,Medium,Critical,25,Critical,True,fallback
 IMP-002,GAP-002,CHG-002,Monitoring,Transaction Monitoring,AML Monitoring System,Financial Crime,3,50,Low,Critical,12,Critical,False,fallback
-IMP-003,GAP-003,CHG-003,General,Unknown,Unknown,Unknown,4,75,High,Critical,25,Critical,True,fallback
+IMP-003,GAP-003,CHG-003,KYC,Customer Due Diligence,KYC Platform,Risk Operations,4,75,Medium,Critical,25,Critical,True,fallback
 IMP-004,GAP-004,CHG-004,Monitoring,Transaction Monitoring,AML Monitoring System,Financial Crime,3,50,Low,Critical,12,Critical,False,fallback
-IMP-005,GAP-005,CHG-005,General,Unknown,Unknown,Unknown,4,75,High,Critical,25,Critical,True,fallback
+IMP-005,GAP-005,CHG-005,Monitoring,Transaction Monitoring,AML Monitoring System,Financial Crime,3,50,Low,Critical,12,Critical,False,fallback

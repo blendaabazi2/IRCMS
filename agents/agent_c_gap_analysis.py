@@ -17,7 +17,8 @@ from pydantic import BaseModel, Field
 
 import anthropic
 from agents.utils import (
-    INPUT_DIR, OUTPUT_DIR, read_json, write_json, make_id, timestamp
+    INPUT_DIR, OUTPUT_DIR, read_json, write_json, make_id, timestamp,
+    load_policy_pack,
 )
 
 
@@ -156,7 +157,7 @@ Classification guide:
 - Partial        : policy partially satisfies the requirement (some element missing)
 - Needs Review   : relationship is unclear without further legal interpretation
 - Compliant      : policy already satisfies the requirement (no gap)
-- human_review_required = true whenever confidence < 0.80 or language is ambiguous
+- human_review_required = true whenever confidence < {confidence_threshold} or language is ambiguous
 """
 
 
@@ -164,19 +165,17 @@ Classification guide:
 
 def _classify_area(requirement: str) -> str:
     text = requirement.lower()
-    if "kyc" in text or "customer" in text:
-        return "KYC"
-    if "transaction" in text or "suspicious" in text:
-        return "Monitoring"
-    if "evidence" in text or "audit" in text or "retain" in text:
-        return "Audit"
+    for cat in load_policy_pack()["risk_categories"]:
+        if any(kw in text for kw in cat["keywords"]):
+            return cat["id"]
     return "General"
 
 
 def _target_deadline(effective_date: str) -> str:
+    lead_days = load_policy_pack()["gap_analysis"]["remediation_lead_days"]
     try:
         dt = datetime.fromisoformat(effective_date)
-        return (dt - timedelta(days=30)).date().isoformat()
+        return (dt - timedelta(days=lead_days)).date().isoformat()
     except ValueError:
         return effective_date
 
@@ -185,88 +184,77 @@ def _rule_based_gap(change: dict, policy: dict) -> dict:
     """Deterministic fallback used when the Claude API is unavailable."""
     import re
 
-    # Use only the body of the requirement (skip the first line which is the section header)
+    pack = load_policy_pack()
+    fb = pack["gap_analysis"]["fallback_scores"]
+    triggers = pack["gap_analysis"]["high_risk_language_triggers"]
+
     req_lines = change["requirement"].strip().splitlines()
     req_body = " ".join(req_lines[1:]).lower() if len(req_lines) > 1 else req_lines[0].lower()
     pol = policy.get("current_policy", "").lower()
 
-    # Extract numbers that are followed by a time unit — avoids capturing section numbers
     _time_nums = re.compile(r"(\d+)\s*(?:months?|years?|days?|hours?|weeks?)")
-
     req_time = _time_nums.findall(req_body)
     pol_time = _time_nums.findall(pol)
 
-    # Detect frequency-word mismatches (daily vs weekly, etc.)
     _freq_order = ["hourly", "daily", "weekly", "monthly", "quarterly", "annually"]
     req_freq = next((f for f in _freq_order if f in req_body), None)
     pol_freq = next((f for f in _freq_order if f in pol), None)
 
-    high_risk_language = any(t in req_body for t in ["must", "within", "high-risk", "mandatory"])
+    high_risk_language = any(t in req_body for t in triggers)
 
     if pol == "no matching policy found":
-        gap_status = "Non-compliant"
+        cfg = fb["no_policy_exists"]
         gap_desc = "No internal policy exists for this regulatory requirement."
-        severity = "High"
-        effort = "High"
         action = f"Draft a new policy to satisfy: {req_lines[-1][:120]}"
-        human = True
-        reason = "No existing policy — legal drafting required before remediation can start."
+        severity = cfg["severity"]
 
     elif req_time and pol_time and req_time[0] != pol_time[0]:
-        gap_status = "Non-compliant"
+        cfg = fb["time_period_mismatch"]
         gap_desc = (
             f"Time-period mismatch: regulation requires {req_time[0]} "
             f"but current policy specifies {pol_time[0]}."
         )
-        severity = "High" if high_risk_language else "Medium"
-        effort = "Medium"
         action = (
             f"Update '{policy.get('policy_id', 'policy')}' to change the retention/review period "
             f"from {pol_time[0]} to {req_time[0]} as required by {change['source_section']}."
         )
-        human = False
-        reason = ""
+        severity = "High" if high_risk_language else cfg["severity"]
 
     elif req_freq and pol_freq and _freq_order.index(req_freq) < _freq_order.index(pol_freq):
-        gap_status = "Non-compliant"
+        cfg = fb["frequency_mismatch"]
         gap_desc = (
             f"Frequency mismatch: regulation requires {req_freq} action "
             f"but current policy only specifies {pol_freq}."
         )
-        severity = "High" if high_risk_language else "Medium"
-        effort = "High"
         action = (
             f"Update '{policy.get('policy_id', 'policy')}' and supporting systems "
             f"to increase monitoring frequency from {pol_freq} to {req_freq}."
         )
-        human = True
-        reason = "Frequency increase may require system or workflow changes; human sign-off needed."
+        severity = "High" if high_risk_language else cfg["severity"]
 
     else:
-        gap_status = "Needs Review"
+        cfg = fb["default"]
         gap_desc = "Policy exists but semantic alignment with the requirement needs manual verification."
-        severity = "Medium"
-        effort = "Low"
         action = "Perform a manual policy review against the regulatory requirement text."
-        human = True
-        reason = "Rule-based fallback could not determine gap with confidence — human review required."
+        severity = cfg["severity"]
 
     return {
-        "gap_status": gap_status,
+        "gap_status": cfg["gap_status"],
         "severity": severity,
-        "confidence": 0.70,
+        "confidence": cfg["confidence"],
         "gap_description": gap_desc,
         "recommended_action": action,
-        "effort_estimate": effort,
+        "effort_estimate": cfg["effort"],
         "suggested_owner": policy.get("owner", "Compliance Team"),
-        "human_review_required": human,
-        "review_reason": reason,
+        "human_review_required": cfg["human_review_required"],
+        "review_reason": cfg["review_reason"],
         "open_questions": [],
         "flagged_ambiguities": [],
     }
 
 
 def _call_claude(client: anthropic.Anthropic, change: dict, policy: dict) -> dict:
+    confidence_threshold = load_policy_pack()["gap_analysis"]["human_review_confidence_threshold"]
     prompt = _PROMPT_TEMPLATE.format(
         change_id=change["change_id"],
         source_section=change["source_section"],
@@ -277,6 +265,7 @@ def _call_claude(client: anthropic.Anthropic, change: dict, policy: dict) -> dic
         policy_area=policy.get("policy_area", "General"),
         current_policy=policy.get("current_policy", "No matching policy found"),
         owner=policy.get("owner", "Unknown"),
+        confidence_threshold=confidence_threshold,
     )
 
     try:

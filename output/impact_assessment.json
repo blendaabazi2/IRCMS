@@ -1,6 +1,6 @@
 {
   "run_id": "CTX-001",
-  "generated_at": "2026-06-17T09:30:28.752497Z",
+  "generated_at": "2026-06-17T11:27:51.861528Z",
   "regulation_source": "input/regulation.txt",
   "jurisdiction": "EU",
   "total_assessments": 5,
@@ -21,24 +21,34 @@
       "impact_id": "IMP-001",
       "gap_id": "GAP-001",
       "change_id": "CHG-001",
-      "policy_area": "General",
+      "policy_area": "KYC",
       "system_impact_score": 4,
       "regulatory_risk_score": 75,
-      "remediation_complexity": "High",
+      "remediation_complexity": "Medium",
       "deadline_risk": "Critical",
-      "affected_processes": [],
+      "affected_processes": [
+        {
+          "process_id": "PR-001",
+          "process_name": "Customer Due Diligence",
+          "system": "KYC Platform",
+          "business_unit": "Risk Operations",
+          "owner": "Compliance Team"
+        }
+      ],
       "business_units_affected": [
-        "Unknown"
+        "Risk Operations"
       ],
       "headcount_affected": 25,
-      "dependency_systems": [],
+      "dependency_systems": [
+        "KYC Platform"
+      ],
       "priority": "Critical",
-      "impact_summary": "The General gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The KYC gap (GAP-001) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": true,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-17T09:30:27.726638Z",
+        "analyzed_at": "2026-06-17T11:27:51.833954Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
         "days_to_deadline": 13
@@ -75,7 +85,7 @@
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-17T09:30:28.022991Z",
+        "analyzed_at": "2026-06-17T11:27:51.843370Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
         "days_to_deadline": 13
@@ -85,24 +95,34 @@
       "impact_id": "IMP-003",
       "gap_id": "GAP-003",
       "change_id": "CHG-003",
-      "policy_area": "General",
+      "policy_area": "KYC",
       "system_impact_score": 4,
       "regulatory_risk_score": 75,
-      "remediation_complexity": "High",
+      "remediation_complexity": "Medium",
       "deadline_risk": "Critical",
-      "affected_processes": [],
+      "affected_processes": [
+        {
+          "process_id": "PR-001",
+          "process_name": "Customer Due Diligence",
+          "system": "KYC Platform",
+          "business_unit": "Risk Operations",
+          "owner": "Compliance Team"
+        }
+      ],
       "business_units_affected": [
-        "Unknown"
+        "Risk Operations"
       ],
       "headcount_affected": 25,
-      "dependency_systems": [],
+      "dependency_systems": [
+        "KYC Platform"
+      ],
       "priority": "Critical",
-      "impact_summary": "The General gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The KYC gap (GAP-003) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
       "human_review_required": true,
       "escalation_required": true,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-17T09:30:28.259606Z",
+        "analyzed_at": "2026-06-17T11:27:51.848978Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
         "days_to_deadline": 13
@@ -139,7 +159,7 @@
       "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-17T09:30:28.516327Z",
+        "analyzed_at": "2026-06-17T11:27:51.855321Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
         "days_to_deadline": 13
@@ -149,24 +169,34 @@
       "impact_id": "IMP-005",
       "gap_id": "GAP-005",
       "change_id": "CHG-005",
-      "policy_area": "General",
-      "system_impact_score": 4,
-      "regulatory_risk_score": 75,
-      "remediation_complexity": "High",
+      "policy_area": "Monitoring",
+      "system_impact_score": 3,
+      "regulatory_risk_score": 50,
+      "remediation_complexity": "Low",
       "deadline_risk": "Critical",
-      "affected_processes": [],
-      "business_units_affected": [
-        "Unknown"
+      "affected_processes": [
+        {
+          "process_id": "PR-002",
+          "process_name": "Transaction Monitoring",
+          "system": "AML Monitoring System",
+          "business_unit": "Financial Crime",
+          "owner": "AML Team"
+        }
       ],
-      "headcount_affected": 25,
-      "dependency_systems": [],
+      "business_units_affected": [
+        "Financial Crime"
+      ],
+      "headcount_affected": 12,
+      "dependency_systems": [
+        "AML Monitoring System"
+      ],
       "priority": "Critical",
-      "impact_summary": "The General gap (GAP-005) is assessed as High severity with a system impact score of 4/5. Regulatory risk is 75/100 with 13 days remaining to the compliance deadline. Estimated 25 staff members will need workflow or system changes.",
+      "impact_summary": "The Monitoring gap (GAP-005) is assessed as Medium severity with a system impact score of 3/5. Regulatory risk is 50/100 with 13 days remaining to the compliance deadline. Estimated 12 staff members will need workflow or system changes.",
       "human_review_required": true,
-      "escalation_required": true,
+      "escalation_required": false,
       "metadata": {
         "analyzed_by": "agent_d_impact_assessment",
-        "analyzed_at": "2026-06-17T09:30:28.752448Z",
+        "analyzed_at": "2026-06-17T11:27:51.859958Z",
         "model": "rule_based_fallback",
         "analysis_source": "fallback",
         "days_to_deadline": 13
