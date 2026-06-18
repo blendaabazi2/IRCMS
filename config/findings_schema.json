@@ -1,17 +1,395 @@
 {
-  "finding_id": "FND-001",
-  "change_id": "CHG-001",
-  "gap_id": "GAP-001",
-  "requirement": "Regulatory requirement text",
-  "jurisdiction": "EU",
-  "severity": "High",
-  "confidence": 0.91,
-  "evidence": ["EV-001"],
-  "current_policy": "Existing policy text",
-  "required_policy": "Required policy text",
-  "matched_control_id": "CTRL-001",
-  "recommended_action": "Update policy",
-  "human_review_required": true,
-  "owner": "Compliance Team",
-  "deadline": "2026-08-01"
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FindingsReport",
+  "description": "Unified compliance findings report produced by Agent H. Consolidates all findings from the 6-agent pipeline into a single, auditable, analytics-ready document. Every finding carries mandatory evidence pointers, human oversight flags, and downstream traceability links.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "generated_at",
+    "agent_source",
+    "regulation_source",
+    "jurisdiction",
+    "summary",
+    "findings"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Schema version — increment on breaking changes to maintain backward compatibility"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^CTX-\\d{3}$",
+      "description": "Matches context_packet_id from Agent A — propagated unchanged so every artifact in the run shares the same ID"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "UTC ISO-8601 timestamp of when Agent H produced this report"
+    },
+    "agent_source": {
+      "type": "string",
+      "description": "Always 'agent_h_orchestrator' — records which agent consolidated the findings"
+    },
+    "regulation_source": {
+      "type": "string",
+      "description": "Relative path to the source regulation file ingested by Agent A"
+    },
+    "jurisdiction": {
+      "type": "string",
+      "description": "Primary jurisdiction inherited from context_packet (e.g. EU, US, UK)"
+    },
+    "summary": {
+      "$ref": "#/definitions/FindingsSummary"
+    },
+    "findings": {
+      "type": "array",
+      "description": "Ordered list of findings — sorted by severity then priority (Critical → High → Medium → Low)",
+      "items": {
+        "$ref": "#/definitions/Finding"
+      }
+    }
+  },
+  "definitions": {
+    "FindingsSummary": {
+      "type": "object",
+      "description": "Aggregated counts for quick dashboard display and board-level reporting",
+      "required": [
+        "total_findings",
+        "by_severity",
+        "by_status",
+        "by_policy_area",
+        "human_review_required_count"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "total_findings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "by_severity": {
+          "type": "object",
+          "description": "Finding count per severity band",
+          "properties": {
+            "Critical": { "type": "integer", "minimum": 0 },
+            "High":     { "type": "integer", "minimum": 0 },
+            "Medium":   { "type": "integer", "minimum": 0 },
+            "Low":      { "type": "integer", "minimum": 0 }
+          }
+        },
+        "by_status": {
+          "type": "object",
+          "description": "Finding count per compliance status",
+          "properties": {
+            "Non-compliant": { "type": "integer", "minimum": 0 },
+            "Partial":       { "type": "integer", "minimum": 0 },
+            "Needs Review":  { "type": "integer", "minimum": 0 },
+            "Compliant":     { "type": "integer", "minimum": 0 },
+            "Escalated":     { "type": "integer", "minimum": 0 },
+            "Auto-closed":   { "type": "integer", "minimum": 0 }
+          }
+        },
+        "by_policy_area": {
+          "type": "object",
+          "description": "Finding count per compliance domain (KYC, Monitoring, Audit, etc.)",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "human_review_required_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of findings that require human SME review before remediation can proceed"
+        }
+      }
+    },
+    "Finding": {
+      "type": "object",
+      "description": "One atomic compliance finding — the canonical unit of output for the IRCMS pipeline. Each finding links a regulatory requirement change to a gap, a control, an impact assessment, and a remediation action.",
+      "required": [
+        "finding_id",
+        "change_id",
+        "gap_id",
+        "policy_area",
+        "finding_type",
+        "status",
+        "severity",
+        "confidence",
+        "finding_description",
+        "evidence_pointer",
+        "current_state",
+        "required_state",
+        "remediation",
+        "human_oversight",
+        "downstream_links",
+        "analytics_tags",
+        "metadata"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^FND-\\d{3}$",
+          "description": "Unique finding identifier assigned by Agent H (e.g. FND-001)"
+        },
+        "change_id": {
+          "type": "string",
+          "pattern": "^CHG-\\d{3}$",
+          "description": "Foreign key to change_register.json — traces this finding to the extracted regulatory change"
+        },
+        "gap_id": {
+          "type": "string",
+          "pattern": "^GAP-\\d{3}$",
+          "description": "Foreign key to gap_analysis.json — links to the gap identified by Agent C"
+        },
+        "policy_area": {
+          "type": "string",
+          "description": "Compliance domain (e.g. KYC, Monitoring, Audit, DataPrivacy, Reporting, General)"
+        },
+        "finding_type": {
+          "type": "string",
+          "enum": ["gap", "control_gap", "impact", "exception"],
+          "description": "gap=policy not met; control_gap=no control covers requirement; impact=downstream system effect; exception=escalated triage item"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Non-compliant", "Partial", "Needs Review", "Compliant", "Escalated", "Auto-closed"],
+          "description": "Non-compliant: direct conflict with existing policy. Partial: some coverage exists. Needs Review: ambiguous, requires human judgement. Compliant: no gap. Escalated: severity/deadline triggered automatic escalation. Auto-closed: informational change with no action required."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["Critical", "High", "Medium", "Low"],
+          "description": "Risk severity if this finding is not resolved before effective_date"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Pipeline confidence in this finding (0.0–1.0). Below 0.80 triggers human_oversight.review_required=true"
+        },
+        "finding_description": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Plain-language explanation of exactly what is missing or misaligned — written for a compliance officer, not a developer"
+        },
+        "evidence_pointer": {
+          "$ref": "#/definitions/EvidencePointer"
+        },
+        "current_state": {
+          "$ref": "#/definitions/CurrentState"
+        },
+        "required_state": {
+          "$ref": "#/definitions/RequiredState"
+        },
+        "remediation": {
+          "$ref": "#/definitions/RemediationRef"
+        },
+        "human_oversight": {
+          "$ref": "#/definitions/HumanOversight"
+        },
+        "downstream_links": {
+          "$ref": "#/definitions/DownstreamLinks"
+        },
+        "analytics_tags": {
+          "type": "array",
+          "description": "Free-form tags for analytics filtering (status, policy area, severity, jurisdiction, special flags)",
+          "items": { "type": "string" },
+          "examples": [["Non-compliant", "KYC", "High", "EU", "Escalated"]]
+        },
+        "metadata": {
+          "$ref": "#/definitions/FindingMetadata"
+        }
+      }
+    },
+    "EvidencePointer": {
+      "type": "object",
+      "description": "Mandatory traceable evidence — every finding must link back to a verbatim paragraph in the source regulation. Auditors use source_quote to verify without re-reading the full document.",
+      "required": [
+        "evidence_id",
+        "source_section",
+        "source_file",
+        "source_quote",
+        "content_hash"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "evidence_id": {
+          "type": "string",
+          "pattern": "^EV-\\d{3}$",
+          "description": "Foreign key to evidence_index.json (e.g. EV-001) — enables full chain-of-custody tracing"
+        },
+        "source_section": {
+          "type": "string",
+          "description": "Section header from the regulation (e.g. 'Section 4.7 - Beneficial Ownership Verification')"
+        },
+        "source_file": {
+          "type": "string",
+          "description": "Relative path to the original regulation file used as evidence"
+        },
+        "source_quote": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Verbatim excerpt from the regulation — the exact text that triggered this finding. Auditors rely on this to verify conclusions without re-reading the full document."
+        },
+        "content_hash": {
+          "type": "string",
+          "description": "SHA-256 prefix (12 chars) of source_quote — used for tamper detection and idempotent re-run verification"
+        }
+      }
+    },
+    "CurrentState": {
+      "type": "object",
+      "description": "The current internal policy or control state as it exists before remediation",
+      "required": ["policy_id", "text", "owner"],
+      "additionalProperties": false,
+      "properties": {
+        "policy_id": {
+          "type": "string",
+          "description": "Identifier of the current policy (e.g. POL-001), or empty string if no policy exists"
+        },
+        "text": {
+          "type": "string",
+          "description": "Current policy text — what the organisation does today"
+        },
+        "owner": {
+          "type": "string",
+          "description": "Team or role responsible for maintaining this policy"
+        }
+      }
+    },
+    "RequiredState": {
+      "type": "object",
+      "description": "What the regulation mandates — the target state after remediation",
+      "required": ["requirement_text", "source_section", "effective_date"],
+      "additionalProperties": false,
+      "properties": {
+        "requirement_text": {
+          "type": "string",
+          "description": "The regulatory requirement verbatim or closely paraphrased"
+        },
+        "source_section": {
+          "type": "string",
+          "description": "Section of the regulation that mandates this change"
+        },
+        "effective_date": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO date from which the regulation is enforceable (e.g. 2026-09-01)"
+        }
+      }
+    },
+    "RemediationRef": {
+      "type": "object",
+      "description": "Actionable remediation plan — feeds directly into remediation_plan.md and GRC task creation",
+      "required": [
+        "recommended_action",
+        "effort_estimate",
+        "suggested_owner",
+        "target_deadline",
+        "routing_category"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "recommended_action": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Concrete step to close the gap — specific enough to assign as a task"
+        },
+        "effort_estimate": {
+          "type": "string",
+          "enum": ["Low", "Medium", "High"],
+          "description": "Implementation effort (Low = < 1 week; Medium = 1–4 weeks; High = > 4 weeks)"
+        },
+        "suggested_owner": {
+          "type": "string",
+          "description": "Team or role best placed to execute the remediation"
+        },
+        "target_deadline": {
+          "type": "string",
+          "description": "ISO date — hard implementation target, set 30 days before effective_date"
+        },
+        "routing_category": {
+          "type": "string",
+          "description": "Routing decision from Agent H (e.g. 'Compliance Lead Escalation', 'Legal Review', 'Policy Owner Remediation')"
+        }
+      }
+    },
+    "HumanOversight": {
+      "type": "object",
+      "description": "Flags where automation lacks full certainty and human SME input is required. open_questions are routed to legal or compliance for interpretation before remediation proceeds.",
+      "required": ["review_required"],
+      "additionalProperties": false,
+      "properties": {
+        "review_required": {
+          "type": "boolean",
+          "description": "true when confidence < 0.80, regulatory language is ambiguous, or severity is Critical"
+        },
+        "review_reason": {
+          "type": "string",
+          "description": "One sentence explaining why a human must review this finding before remediation can proceed"
+        },
+        "open_questions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Specific legal or regulatory questions that require SME input — each item should be a single answerable question"
+        },
+        "flagged_ambiguities": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Verbatim phrases from the regulation text that are vague, contradictory, or open to multiple interpretations"
+        }
+      }
+    },
+    "DownstreamLinks": {
+      "type": "object",
+      "description": "Cross-references to other pipeline outputs — enables full chain-of-custody tracing from finding back to source and forward to remediation task",
+      "required": ["control_id", "impact_id", "mapping_id", "exception_category"],
+      "additionalProperties": false,
+      "properties": {
+        "control_id": {
+          "type": "string",
+          "description": "Foreign key to control_inventory (e.g. CTRL-001), or empty string if no control exists"
+        },
+        "impact_id": {
+          "type": "string",
+          "description": "Foreign key to impact_assessment.json (e.g. IMP-001)"
+        },
+        "mapping_id": {
+          "type": "string",
+          "description": "Foreign key to control_mapping.json (e.g. MAP-001)"
+        },
+        "exception_category": {
+          "type": "string",
+          "description": "Exception routing decision from Agent H — matches exception_routing keys in policy_pack.yaml"
+        }
+      }
+    },
+    "FindingMetadata": {
+      "type": "object",
+      "description": "Provenance record — which agent produced this finding, when, and using what model",
+      "required": ["analyzed_by", "analyzed_at", "model", "analysis_source"],
+      "additionalProperties": false,
+      "properties": {
+        "analyzed_by": {
+          "type": "string",
+          "description": "Agent that consolidated this finding (always 'agent_h_orchestrator')"
+        },
+        "analyzed_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "UTC ISO-8601 timestamp of consolidation"
+        },
+        "model": {
+          "type": "string",
+          "description": "AI model used (e.g. 'claude-sonnet-4-6') or 'rule_based_fallback' if API was unavailable"
+        },
+        "analysis_source": {
+          "type": "string",
+          "enum": ["claude_api", "fallback"],
+          "description": "Whether this finding was produced by the Claude API or the deterministic fallback"
+        }
+      }
+    }
+  }
 }

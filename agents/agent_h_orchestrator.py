@@ -73,6 +73,164 @@ def _prioritize_gaps(gaps: list, impacts: dict) -> list:
     return sorted(gaps, key=sort_key)
 
 
+# ── Unified Findings Report (findings_schema.json) ───────────────────────────
+
+def build_findings_report(
+    context: dict,
+    changes: list,
+    gaps: list,
+    impacts: dict,
+    mappings: dict,
+) -> dict:
+    """
+    Consolidate all pipeline outputs into a single FindingsReport that conforms
+    to config/findings_schema.json.  Every finding carries mandatory evidence
+    pointers, human oversight flags, and downstream traceability links.
+    """
+    run_id            = context.get("context_packet_id", "CTX-001")
+    jurisdiction      = context.get("metadata", {}).get("jurisdiction", "Unknown")
+    regulation_source = context.get("metadata", {}).get("source_file", "Unknown")
+
+    findings = []
+    for idx, gap in enumerate(gaps, start=1):
+        gid     = gap.get("gap_id", "")
+        impact  = impacts.get(gid, {})
+        mapping = mappings.get(gid, {})
+
+        # ── Evidence pointer ──────────────────────────────────────────────────
+        ev = gap.get("evidence", {})
+        evidence_pointer = {
+            "evidence_id":    ev.get("evidence_id", ""),
+            "source_section": ev.get("source_section", ""),
+            "source_file":    ev.get("source_file", regulation_source),
+            "source_quote":   ev.get("source_quote", ""),
+            "content_hash":   ev.get("content_hash", ""),
+        }
+
+        # ── Current state ─────────────────────────────────────────────────────
+        cp = gap.get("current_policy", {})
+        current_state = {
+            "policy_id": cp.get("policy_id", "") if isinstance(cp, dict) else "",
+            "text":      cp.get("text", "")      if isinstance(cp, dict) else str(cp),
+            "owner":     cp.get("owner", "")     if isinstance(cp, dict) else "",
+        }
+
+        # ── Required state ────────────────────────────────────────────────────
+        rc = gap.get("required_change", {})
+        required_state = {
+            "requirement_text": rc.get("requirement_text", "") if isinstance(rc, dict) else str(rc),
+            "source_section":   rc.get("source_section", "")  if isinstance(rc, dict) else "",
+            "effective_date":   rc.get("effective_date", "")  if isinstance(rc, dict) else "",
+        }
+
+        # ── Remediation ───────────────────────────────────────────────────────
+        rem   = gap.get("remediation", {})
+        route = categorize_exception(gap, impact, mapping)
+        remediation = {
+            "recommended_action": rem.get("recommended_action", "Review required"),
+            "effort_estimate":    rem.get("effort_estimate",
+                                          mapping.get("effort_estimate", "Medium")),
+            "suggested_owner":    rem.get("suggested_owner",
+                                          mapping.get("suggested_owner", "Compliance Team")),
+            "target_deadline":    rem.get("target_deadline", ""),
+            "routing_category":   route,
+        }
+
+        # ── Human oversight ───────────────────────────────────────────────────
+        ho = gap.get("human_oversight", {})
+        human_oversight = {
+            "review_required":    ho.get("review_required", False),
+            "review_reason":      ho.get("review_reason", ""),
+            "open_questions":     ho.get("open_questions", []),
+            "flagged_ambiguities": ho.get("flagged_ambiguities", []),
+        }
+
+        # ── Downstream links ──────────────────────────────────────────────────
+        downstream_links = {
+            "control_id":         mapping.get("control_id", ""),
+            "impact_id":          impact.get("impact_id", ""),
+            "mapping_id":         mapping.get("mapping_id", ""),
+            "exception_category": route,
+        }
+
+        # ── Analytics tags ────────────────────────────────────────────────────
+        tags = [
+            gap.get("gap_status", ""),
+            gap.get("policy_area", ""),
+            gap.get("severity", ""),
+            jurisdiction,
+        ]
+        if impact.get("escalation_required"):
+            tags.append("Escalated")
+        if mapping.get("cross_jurisdiction_overlap"):
+            tags.append("CrossJurisdiction")
+        if human_oversight["review_required"]:
+            tags.append("HumanReviewRequired")
+
+        findings.append({
+            "finding_id":          f"FND-{idx:03d}",
+            "change_id":           gap.get("change_id", ""),
+            "gap_id":              gid,
+            "policy_area":         gap.get("policy_area", "General"),
+            "finding_type":        "gap",
+            "status":              gap.get("gap_status", "Needs Review"),
+            "severity":            gap.get("severity", "Medium"),
+            "confidence":          round(gap.get("confidence", 0.70), 4),
+            "finding_description": gap.get("gap_description", ""),
+            "evidence_pointer":    evidence_pointer,
+            "current_state":       current_state,
+            "required_state":      required_state,
+            "remediation":         remediation,
+            "human_oversight":     human_oversight,
+            "downstream_links":    downstream_links,
+            "analytics_tags":      [t for t in tags if t],
+            "metadata": {
+                "analyzed_by":     "agent_h_orchestrator",
+                "analyzed_at":     timestamp(),
+                "model":           gap.get("metadata", {}).get("model", "rule_based_fallback"),
+                "analysis_source": gap.get("metadata", {}).get("analysis_source", "fallback"),
+            },
+        })
+
+    # ── Summary counts ────────────────────────────────────────────────────────
+    by_severity = {"Critical": 0, "High": 0, "Medium": 0, "Low": 0}
+    by_status   = {
+        "Non-compliant": 0, "Partial": 0, "Needs Review": 0,
+        "Compliant": 0, "Escalated": 0, "Auto-closed": 0,
+    }
+    by_area:  dict[str, int] = {}
+    hr_count = 0
+
+    for f in findings:
+        sev = f["severity"]
+        if sev in by_severity:
+            by_severity[sev] += 1
+        st = f["status"]
+        if st in by_status:
+            by_status[st] += 1
+        area = f["policy_area"]
+        by_area[area] = by_area.get(area, 0) + 1
+        if f["human_oversight"]["review_required"]:
+            hr_count += 1
+
+    return {
+        "schema_version":    "1.0",
+        "run_id":            run_id,
+        "generated_at":      timestamp(),
+        "agent_source":      "agent_h_orchestrator",
+        "regulation_source": regulation_source,
+        "jurisdiction":      jurisdiction,
+        "summary": {
+            "total_findings":              len(findings),
+            "by_severity":                 by_severity,
+            "by_status":                   by_status,
+            "by_policy_area":              by_area,
+            "human_review_required_count": hr_count,
+        },
+        "findings": findings,
+    }
+
+
 # ── Helper functions ──────────────────────────────────────────────────────────
 
 def _gap_field(gap: dict, *keys, default="Unknown") -> str:
@@ -291,16 +449,20 @@ def run():
         "generated_at":       timestamp(),
     }
 
+    findings_report = build_findings_report(context, changes, gaps, impacts, mappings)
+
     write_markdown(OUTPUT_DIR / "remediation_plan.md", remediation_plan)
     write_markdown(OUTPUT_DIR / "exceptions.md",       exceptions)
     write_json(OUTPUT_DIR / "approval_packet.json",    approval_packet)
     write_markdown(OUTPUT_DIR / "audit_log.md",        audit_log)
     write_json(OUTPUT_DIR / "metrics.json",            metrics)
+    write_json(OUTPUT_DIR / "findings_report.json",    findings_report)
 
     print(f"[agent_h] Orchestration complete.")
     print(f"  Gaps processed     : {len(gaps)} (after deduplication)")
     print(f"  High/Critical risk : {metrics['high_risk_gaps']}")
     print(f"  Routing summary    : {approval_packet['routing_summary']}")
+    print(f"  Findings report    : {findings_report['summary']['total_findings']} findings -> findings_report.json")
     return approval_packet, metrics
 
 

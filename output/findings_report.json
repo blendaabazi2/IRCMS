@@ -1,0 +1,332 @@
+{
+  "schema_version": "1.0",
+  "run_id": "CTX-001",
+  "generated_at": "2026-06-18T14:35:47.591851Z",
+  "agent_source": "agent_h_orchestrator",
+  "regulation_source": "input/regulation.txt",
+  "jurisdiction": "EU",
+  "summary": {
+    "total_findings": 5,
+    "by_severity": {
+      "Critical": 0,
+      "High": 2,
+      "Medium": 3,
+      "Low": 0
+    },
+    "by_status": {
+      "Non-compliant": 2,
+      "Partial": 0,
+      "Needs Review": 3,
+      "Compliant": 0,
+      "Escalated": 0,
+      "Auto-closed": 0
+    },
+    "by_policy_area": {
+      "KYC": 2,
+      "Monitoring": 3
+    },
+    "human_review_required_count": 3
+  },
+  "findings": [
+    {
+      "finding_id": "FND-001",
+      "change_id": "CHG-001",
+      "gap_id": "GAP-001",
+      "policy_area": "KYC",
+      "finding_type": "gap",
+      "status": "Non-compliant",
+      "severity": "High",
+      "confidence": 0.7,
+      "finding_description": "Time-period mismatch: regulation requires 30 but current policy specifies 24.",
+      "evidence_pointer": {
+        "evidence_id": "EV-001",
+        "source_section": "Section 2.1 - Enhanced Due Diligence for High-Risk Clients",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding. Failure to comply will result in penalties of up to EUR 10 million or 10% of annual turnover.",
+        "content_hash": "bbb37d24a0d3"
+      },
+      "current_state": {
+        "policy_id": "POL-001",
+        "text": "KYC review for high-risk customers is performed every 24 months",
+        "owner": "Compliance Team"
+      },
+      "required_state": {
+        "requirement_text": "Financial institutions must complete enhanced due diligence for all high-risk clients within 30 days of onboarding.",
+        "source_section": "Section 2.1 - Enhanced Due Diligence for High-Risk Clients",
+        "effective_date": "2026-07-01"
+      },
+      "remediation": {
+        "recommended_action": "Update 'POL-001' to change the retention/review period from 24 to 30 as required by Section 2.1 - Enhanced Due Diligence for High-Risk Clients.",
+        "effort_estimate": "Medium",
+        "suggested_owner": "Compliance Team",
+        "target_deadline": "2026-06-01",
+        "routing_category": "Compliance Lead Escalation"
+      },
+      "human_oversight": {
+        "review_required": false,
+        "review_reason": "",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "downstream_links": {
+        "control_id": "CTRL-001",
+        "impact_id": "IMP-001",
+        "mapping_id": "MAP-001",
+        "exception_category": "Compliance Lead Escalation"
+      },
+      "analytics_tags": [
+        "Non-compliant",
+        "KYC",
+        "High",
+        "EU",
+        "Escalated"
+      ],
+      "metadata": {
+        "analyzed_by": "agent_h_orchestrator",
+        "analyzed_at": "2026-06-18T14:35:47.591763Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "finding_id": "FND-002",
+      "change_id": "CHG-003",
+      "gap_id": "GAP-003",
+      "policy_area": "KYC",
+      "finding_type": "gap",
+      "status": "Non-compliant",
+      "severity": "High",
+      "confidence": 0.7,
+      "finding_description": "Time-period mismatch: regulation requires 14 but current policy specifies 24.",
+      "evidence_pointer": {
+        "evidence_id": "EV-003",
+        "source_section": "Section 4.7 - Beneficial Ownership Verification",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Institutions must verify and record beneficial ownership for all corporate clients within 14 days. Violations are subject to enforcement action and licence suspension.",
+        "content_hash": "bcd14e5e156f"
+      },
+      "current_state": {
+        "policy_id": "POL-001",
+        "text": "KYC review for high-risk customers is performed every 24 months",
+        "owner": "Compliance Team"
+      },
+      "required_state": {
+        "requirement_text": "Institutions must verify and record beneficial ownership for all corporate clients within 14 days.",
+        "source_section": "Section 4.7 - Beneficial Ownership Verification",
+        "effective_date": "2026-07-01"
+      },
+      "remediation": {
+        "recommended_action": "Update 'POL-001' to change the retention/review period from 24 to 14 as required by Section 4.7 - Beneficial Ownership Verification.",
+        "effort_estimate": "Medium",
+        "suggested_owner": "Compliance Team",
+        "target_deadline": "2026-06-01",
+        "routing_category": "Compliance Lead Escalation"
+      },
+      "human_oversight": {
+        "review_required": false,
+        "review_reason": "",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "downstream_links": {
+        "control_id": "CTRL-001",
+        "impact_id": "IMP-003",
+        "mapping_id": "MAP-003",
+        "exception_category": "Compliance Lead Escalation"
+      },
+      "analytics_tags": [
+        "Non-compliant",
+        "KYC",
+        "High",
+        "EU",
+        "Escalated"
+      ],
+      "metadata": {
+        "analyzed_by": "agent_h_orchestrator",
+        "analyzed_at": "2026-06-18T14:35:47.591788Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "finding_id": "FND-003",
+      "change_id": "CHG-002",
+      "gap_id": "GAP-002",
+      "policy_area": "Monitoring",
+      "finding_type": "gap",
+      "status": "Needs Review",
+      "severity": "Medium",
+      "confidence": 0.7,
+      "finding_description": "Policy exists but semantic alignment with the requirement needs manual verification.",
+      "evidence_pointer": {
+        "evidence_id": "EV-002",
+        "source_section": "Section 3.4 - Real-Time Transaction Monitoring",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Institutions must implement real-time transaction monitoring systems capable of flagging suspicious activity within 60 seconds. Non-compliance sanctions may reach EUR 5 million per breach.",
+        "content_hash": "7c05e56eac09"
+      },
+      "current_state": {
+        "policy_id": "POL-002",
+        "text": "Suspicious transactions are reviewed weekly",
+        "owner": "AML Team"
+      },
+      "required_state": {
+        "requirement_text": "Institutions must implement real-time transaction monitoring systems capable of flagging suspicious activity within 60 seconds.",
+        "source_section": "Section 3.4 - Real-Time Transaction Monitoring",
+        "effective_date": "2026-07-01"
+      },
+      "remediation": {
+        "recommended_action": "Perform a manual policy review against the regulatory requirement text.",
+        "effort_estimate": "Low",
+        "suggested_owner": "AML Team",
+        "target_deadline": "2026-06-01",
+        "routing_category": "Legal Review"
+      },
+      "human_oversight": {
+        "review_required": true,
+        "review_reason": "Rule-based fallback could not determine gap with confidence — human review required.",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "downstream_links": {
+        "control_id": "CTRL-002",
+        "impact_id": "IMP-002",
+        "mapping_id": "MAP-002",
+        "exception_category": "Legal Review"
+      },
+      "analytics_tags": [
+        "Needs Review",
+        "Monitoring",
+        "Medium",
+        "EU",
+        "HumanReviewRequired"
+      ],
+      "metadata": {
+        "analyzed_by": "agent_h_orchestrator",
+        "analyzed_at": "2026-06-18T14:35:47.591806Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "finding_id": "FND-004",
+      "change_id": "CHG-004",
+      "gap_id": "GAP-004",
+      "policy_area": "Monitoring",
+      "finding_type": "gap",
+      "status": "Needs Review",
+      "severity": "Medium",
+      "confidence": 0.7,
+      "finding_description": "Policy exists but semantic alignment with the requirement needs manual verification.",
+      "evidence_pointer": {
+        "evidence_id": "EV-004",
+        "source_section": "Section 5.2 - Suspicious Activity Reporting",
+        "source_file": "input/regulation.txt",
+        "source_quote": "Compliance teams must file suspicious activity reports within 24 hours of detection. Breach of this requirement constitutes a regulatory violation liable to fines and remediation orders.",
+        "content_hash": "9ccf2e9d3ba1"
+      },
+      "current_state": {
+        "policy_id": "POL-002",
+        "text": "Suspicious transactions are reviewed weekly",
+        "owner": "AML Team"
+      },
+      "required_state": {
+        "requirement_text": "Compliance teams must file suspicious activity reports within 24 hours of detection.",
+        "source_section": "Section 5.2 - Suspicious Activity Reporting",
+        "effective_date": "2026-07-01"
+      },
+      "remediation": {
+        "recommended_action": "Perform a manual policy review against the regulatory requirement text.",
+        "effort_estimate": "Low",
+        "suggested_owner": "AML Team",
+        "target_deadline": "2026-06-01",
+        "routing_category": "Legal Review"
+      },
+      "human_oversight": {
+        "review_required": true,
+        "review_reason": "Rule-based fallback could not determine gap with confidence — human review required.",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "downstream_links": {
+        "control_id": "CTRL-002",
+        "impact_id": "IMP-004",
+        "mapping_id": "MAP-004",
+        "exception_category": "Legal Review"
+      },
+      "analytics_tags": [
+        "Needs Review",
+        "Monitoring",
+        "Medium",
+        "EU",
+        "HumanReviewRequired"
+      ],
+      "metadata": {
+        "analyzed_by": "agent_h_orchestrator",
+        "analyzed_at": "2026-06-18T14:35:47.591821Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    },
+    {
+      "finding_id": "FND-005",
+      "change_id": "CHG-005",
+      "gap_id": "GAP-005",
+      "policy_area": "Monitoring",
+      "finding_type": "gap",
+      "status": "Needs Review",
+      "severity": "Medium",
+      "confidence": 0.7,
+      "finding_description": "Policy exists but semantic alignment with the requirement needs manual verification.",
+      "evidence_pointer": {
+        "evidence_id": "EV-005",
+        "source_section": "Section 6.1 - Staff Training and Certification",
+        "source_file": "input/regulation.txt",
+        "source_quote": "All compliance staff must complete AML certification training every 6 months. Non-compliance with training obligations may result in regulatory sanctions against the institution.",
+        "content_hash": "7ec99d29fe5b"
+      },
+      "current_state": {
+        "policy_id": "POL-002",
+        "text": "Suspicious transactions are reviewed weekly",
+        "owner": "AML Team"
+      },
+      "required_state": {
+        "requirement_text": "All compliance staff must complete AML certification training every 6 months.",
+        "source_section": "Section 6.1 - Staff Training and Certification",
+        "effective_date": "2026-07-01"
+      },
+      "remediation": {
+        "recommended_action": "Perform a manual policy review against the regulatory requirement text.",
+        "effort_estimate": "Low",
+        "suggested_owner": "AML Team",
+        "target_deadline": "2026-06-01",
+        "routing_category": "Legal Review"
+      },
+      "human_oversight": {
+        "review_required": true,
+        "review_reason": "Rule-based fallback could not determine gap with confidence — human review required.",
+        "open_questions": [],
+        "flagged_ambiguities": []
+      },
+      "downstream_links": {
+        "control_id": "CTRL-002",
+        "impact_id": "IMP-005",
+        "mapping_id": "MAP-005",
+        "exception_category": "Legal Review"
+      },
+      "analytics_tags": [
+        "Needs Review",
+        "Monitoring",
+        "Medium",
+        "EU",
+        "HumanReviewRequired"
+      ],
+      "metadata": {
+        "analyzed_by": "agent_h_orchestrator",
+        "analyzed_at": "2026-06-18T14:35:47.591835Z",
+        "model": "rule_based_fallback",
+        "analysis_source": "fallback"
+      }
+    }
+  ]
+}
