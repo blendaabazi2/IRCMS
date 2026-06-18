@@ -26,7 +26,7 @@ from pathlib import Path
 
 from agents.utils import (
     INPUT_DIR, OUTPUT_DIR,
-    read_json, write_json, make_id, timestamp,
+    read_json, write_json, make_id, stable_hash, timestamp,
     load_policy_pack,
 )
 
@@ -37,21 +37,33 @@ BASE_DIR = Path(__file__).resolve().parents[1]
 # CONSTANTS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-# Obligation checks — ordered by specificity (longer phrases first)
+# Obligation checks — ordered by specificity (longer phrases first).
 # Each entry: (regex_pattern, confidence_boost)
+# Active + passive voice covered; multi-word forms before bare keywords.
 _OBLIGATION_CHECKS: list[tuple[str, float]] = [
-    (r"\bmust not\b",        0.14),   # negative prohibition
-    (r"\bshall not\b",       0.14),   # negative prohibition
-    (r"\bprohibited from\b", 0.12),   # negative prohibition
-    (r"\bmust\b",            0.15),   # strongest positive obligation
-    (r"\bshall\b",           0.15),   # strongest positive obligation
-    (r"\bare required to\b", 0.13),   # positive obligation
-    (r"\brequired to\b",     0.12),   # positive obligation
-    (r"\bare required\b",    0.12),   # positive obligation
-    (r"\bobligated to\b",    0.12),   # positive obligation
-    (r"\bobligated\b",       0.10),   # positive obligation
-    (r"\bprohibited\b",      0.10),   # prohibition (standalone)
-    (r"\bforbidden\b",       0.08),   # prohibition (standalone)
+    # Explicit mandatory / prohibited (highest confidence)
+    (r"\bit is mandatory\b",      0.15),
+    (r"\bno person shall\b",      0.14),
+    (r"\bmust not\b",             0.14),
+    (r"\bshall not\b",            0.14),
+    (r"\bprohibited from\b",      0.12),
+    # Active voice obligations
+    (r"\bmust\b",                 0.15),
+    (r"\bshall\b",                0.15),
+    (r"\bare required to\b",      0.13),
+    (r"\bis required to\b",       0.13),   # passive/singular
+    (r"\brequired to\b",          0.12),
+    (r"\bare required\b",         0.12),
+    (r"\bobligated to\b",         0.12),
+    (r"\bare obliged to\b",       0.12),   # EU legislative style
+    (r"\bobligated\b",            0.10),
+    # Passive voice obligations ("must be", "shall be")
+    (r"\bmust be\b",              0.13),
+    (r"\bshall be\b",             0.13),
+    (r"\bis required\b",          0.11),
+    # Prohibitions
+    (r"\bprohibited\b",           0.10),
+    (r"\bforbidden\b",            0.08),
 ]
 
 # Temporal markers that increase specificity and confidence
@@ -147,8 +159,60 @@ def _classify_segment(section_header: str) -> str:
     return "general"
 
 
+# List-item prefixes: "1.", "(a)", "a)", "-", "•", "*"
+_LIST_ITEM_RE = re.compile(r"^\s*(?:\d+[.):\s]|[a-z][.):\s]|[-•*])\s+", re.IGNORECASE)
+
+# Obligation-stem-then-colon pattern that introduces a list of requirements
+_LIST_OBLIGATION_RE = re.compile(
+    r"([^.!?\n]*(?:must|shall|required to|are required|is required|obligated|obliged)"
+    r"[^.!?\n]*:)\s*\n"
+    r"((?:[ \t]*(?:\d+[.):\s]|[a-z][.):\s]|[-•*])\s*[^\n]+\n?)+)",
+    re.IGNORECASE,
+)
+
+
+def _extract_list_obligations(text: str) -> list[str]:
+    """
+    Detect obligation stems followed by a bulleted/numbered list and emit one
+    synthesised sentence per list item, e.g.:
+      "Firms must comply with the following: \n  1. retain records\n  2. file reports"
+      → ["Firms must comply with the following: retain records",
+         "Firms must comply with the following: file reports"]
+    """
+    results: list[str] = []
+    for match in _LIST_OBLIGATION_RE.finditer(text):
+        stem  = match.group(1).rstrip(":").strip()
+        block = match.group(2)
+        items = re.findall(r"(?:\d+[.):\s]|[a-z][.):\s]|[-•*])\s*([^\n]+)", block, re.IGNORECASE)
+        for item in items:
+            results.append(f"{stem}: {item.strip()}")
+    return results
+
+
 def _split_sentences(text: str) -> list[str]:
-    return [s.strip() for s in re.split(r"(?<=[.!?])\s+", text) if s.strip()]
+    """
+    Split regulatory text into individual sentences. Handles:
+    - Standard sentence endings (. ! ?)
+    - Soft line breaks mid-sentence (single \\n not followed by a list marker)
+    - Semicolons separating independent legal clauses
+    """
+    # Rejoin soft line breaks that are NOT list-item boundaries
+    text = re.sub(
+        r"(?<!\n)\n(?!\n)(?!" + _LIST_ITEM_RE.pattern + r")",
+        " ",
+        text,
+    )
+    # Primary split on sentence endings followed by whitespace + capital/digit
+    sentences: list[str] = re.split(r"(?<=[.!?])\s+(?=[A-Z\d])", text)
+    result: list[str] = []
+    for sent in sentences:
+        # Secondary split on semicolons that begin a new independent clause
+        parts = re.split(
+            r";\s+(?=(?:institutions?|firms?|entities?|persons?|banks?|[A-Z]))",
+            sent,
+        )
+        result.extend(parts)
+    return [s.strip() for s in result if s.strip()]
 
 
 def _has_obligation(text: str) -> bool:
@@ -174,43 +238,56 @@ def extract_changes(evidence_index: list, context_packet: dict) -> list:
     changes        = []
     counter        = 1
 
-    for evidence in evidence_index:
-        excerpt        = evidence.get("text_excerpt", "")
+    seen_hashes: set[str] = set()   # deduplication within the run
+
+    def _emit(sentence: str, evidence: dict, char_cursor: int) -> bool:
+        """Validate, score, and append one requirement sentence. Returns True if added."""
+        nonlocal counter
+        if not _has_obligation(sentence):
+            return False
+        if len(sentence.split()) < 4:
+            return False
+        # Skip duplicates (same text can appear in list extraction + sentence split)
+        h = stable_hash(sentence)
+        if h in seen_hashes:
+            return False
+        seen_hashes.add(h)
+
         source_section = evidence.get("source_section", "")
-        segment_type   = _classify_segment(source_section)
         base_page      = evidence.get("page_estimate", 1)
+        confidence, legal_review, ambiguity_flags = _score_confidence(sentence)
+        bounding_box = _compute_bounding_box(base_page, char_cursor, len(sentence))
 
-        sentences = _split_sentences(excerpt)
+        changes.append({
+            "change_id":             make_id("CHG", counter),
+            "requirement":           sentence,
+            "jurisdiction":          jurisdiction,
+            "effective_date":        effective_date,
+            "source_section":        source_section,
+            "segment_type":          _classify_segment(source_section),
+            "evidence_id":           evidence.get("evidence_id"),
+            "confidence":            confidence,
+            "legal_review_required": legal_review,
+            "ambiguity_flags":       ambiguity_flags,
+            "bounding_box":          bounding_box,
+            "extraction_method":     "rule_based",
+            "extracted_at":          timestamp(),
+        })
+        counter += 1
+        return True
+
+    for evidence in evidence_index:
+        excerpt = evidence.get("text_excerpt", "")
+
+        # Pass 1 — standard sentence-level extraction
         char_cursor = 0
-
-        for sentence in sentences:
-            if not _has_obligation(sentence):
-                char_cursor += len(sentence) + 1
-                continue
-            if len(sentence.split()) < 5:
-                char_cursor += len(sentence) + 1
-                continue
-
-            confidence, legal_review, ambiguity_flags = _score_confidence(sentence)
-            bounding_box = _compute_bounding_box(base_page, char_cursor, len(sentence))
-
-            changes.append({
-                "change_id":             make_id("CHG", counter),
-                "requirement":           sentence,
-                "jurisdiction":          jurisdiction,
-                "effective_date":        effective_date,
-                "source_section":        source_section,
-                "segment_type":          segment_type,
-                "evidence_id":           evidence.get("evidence_id"),
-                "confidence":            confidence,
-                "legal_review_required": legal_review,
-                "ambiguity_flags":       ambiguity_flags,
-                "bounding_box":          bounding_box,
-                "extraction_method":     "rule_based",
-                "extracted_at":          timestamp(),
-            })
-            counter += 1
+        for sentence in _split_sentences(excerpt):
+            _emit(sentence, evidence, char_cursor)
             char_cursor += len(sentence) + 1
+
+        # Pass 2 — synthesise obligation sentences from bulleted/numbered lists
+        for synthesised in _extract_list_obligations(excerpt):
+            _emit(synthesised, evidence, 0)
 
     return changes
 

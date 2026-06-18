@@ -1,6 +1,6 @@
 bundle_id: BUNDLE-001
 version: '1.0'
-generated_at: '2026-06-17T11:27:48.939275Z'
+generated_at: '2026-06-18T14:35:42.692655Z'
 inputs:
   regulation:
     file: input/regulation.txt

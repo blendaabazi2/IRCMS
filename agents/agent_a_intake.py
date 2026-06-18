@@ -87,6 +87,23 @@ def _find_regulation_file() -> Path:
     raise FileNotFoundError("No regulation file found in input/ (expected .txt, .pdf, or .html)")
 
 
+def _normalize_pdf_text(text: str) -> str:
+    """
+    Clean up common pypdf extraction artifacts so downstream regex patterns
+    work reliably on PDF-sourced text.
+    """
+    # Soft-hyphen line breaks: "institu-\ntion" → "institution"
+    text = re.sub(r"(\w)-\n(\w)", r"\1\2", text)
+    # Common ligatures that pypdf may leave un-decoded
+    for old, new in [("ﬁ", "fi"), ("ﬂ", "fl"), ("ﬀ", "ff"), ("ﬃ", "ffi"), ("ﬄ", "ffl")]:
+        text = text.replace(old, new)
+    # Collapse runs of spaces/tabs while keeping newlines
+    text = re.sub(r"[ \t]+", " ", text)
+    # Reduce three or more blank lines to two
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def _load_text(path: Path) -> str:
     suffix = path.suffix.lower()
 
@@ -95,7 +112,8 @@ def _load_text(path: Path) -> str:
             from pypdf import PdfReader
             reader = PdfReader(str(path))
             pages = [page.extract_text() or "" for page in reader.pages]
-            return "\n".join(pages)
+            raw = "\n".join(pages)
+            return _normalize_pdf_text(raw)
         except ImportError:
             print("[agent_a] pypdf not installed — reading PDF as raw text.")
             return path.read_text(encoding="utf-8", errors="ignore")
@@ -240,20 +258,71 @@ def build_context_packet(
 # 3. UNIVERSAL EVIDENCE INDEX
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# Matches regulatory section headers across common document styles.
+# Order: more specific multi-word forms before bare keywords.
+_SECTION_SPLIT_RE = re.compile(
+    r"\n(?=(?:Section|Article|Clause|Chapter|Rule|Part|Regulation|Annex|Schedule|Appendix)\s+[\d.]+)",
+    re.IGNORECASE,
+)
+
+_SECTION_START_RE = re.compile(
+    r"^(?:Section|Article|Clause|Chapter|Rule|Part|Regulation|Annex|Schedule|Appendix)\s+[\d.]+",
+    re.IGNORECASE,
+)
+
+
+def _build_evidence_by_paragraphs(text: str, source_file: str) -> list:
+    """
+    Fallback for PDFs with no recognisable section headers.
+    Each substantial paragraph becomes one evidence record labelled "Paragraph N".
+    Paragraphs shorter than 8 words (page numbers, footers, etc.) are skipped.
+    """
+    paragraphs = [p.strip() for p in re.split(r"\n{2,}", text) if p.strip()]
+    evidence   = []
+    char_offset = 0
+    counter    = 1
+
+    for para in paragraphs:
+        if len(para.split()) < 8:
+            char_offset += len(para) + 2
+            continue
+        evidence.append({
+            "evidence_id":      make_id("EV", counter),
+            "source_section":   f"Paragraph {counter}",
+            "source_file":      source_file,
+            "paragraph_number": 1,
+            "page_estimate":    max(1, char_offset // 3000 + 1),
+            "text_excerpt":     para,
+            "content_hash":     stable_hash(para),
+        })
+        char_offset += len(para) + 2
+        counter += 1
+
+    return evidence
+
+
 def build_evidence_index(text: str, source_file: str) -> list:
     """
-    Split document on Section headers. Each paragraph within a section becomes
-    a separate evidence record with a page estimate and paragraph number so
-    downstream agents can trace every requirement back to its exact source.
+    Split document on section headers (Section / Article / Clause / Chapter /
+    Rule / Part / Regulation / Annex / Schedule / Appendix + number).
+    Each paragraph within a section becomes a separate evidence record.
+
+    Falls back to paragraph-based splitting when no recognised headers are found
+    (common in raw PDF extractions without structural markup).
     """
-    sections = re.split(r"\n(?=Section\s+[\d.]+)", text)
-    evidence = []
+    sections = _SECTION_SPLIT_RE.split(text)
+
+    # If no section-style headers were detected, use paragraph fallback
+    if not any(_SECTION_START_RE.match(s.strip()) for s in sections):
+        return _build_evidence_by_paragraphs(text, source_file)
+
+    evidence    = []
     char_offset = 0
-    counter = 1
+    counter     = 1
 
     for section in sections:
         stripped = section.strip()
-        if not stripped.startswith("Section"):
+        if not _SECTION_START_RE.match(stripped):
             char_offset += len(section)
             continue
 

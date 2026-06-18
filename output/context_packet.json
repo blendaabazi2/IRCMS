@@ -7,7 +7,7 @@
     "effective_date": "2026-07-01",
     "document_type": "Regulatory Publication",
     "source_file": "input/regulation.txt",
-    "processed_at": "2026-06-17T11:27:48.948650Z"
+    "processed_at": "2026-06-18T14:35:42.701445Z"
   },
   "jurisdiction_scope": {
     "project_scope": "EU regulatory change management",
@@ -64,7 +64,7 @@
   ],
   "change_history": [
     {
-      "run_at": "2026-06-17T11:07:27.722923Z",
+      "run_at": "2026-06-18T14:33:48.559691Z",
       "document": "AML Enforcement Directive 2026",
       "jurisdiction": "EU",
       "evidence_count": 5,

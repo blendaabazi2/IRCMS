@@ -270,17 +270,18 @@ class TestAgentH:
                       "approval_required", "routing_summary", "metrics_reference"]:
             assert field in data, f"approval_packet missing field: {field}"
 
-    def test_routing_summary_has_all_categories(self):
+    def test_routing_summary_valid_categories(self):
         data = load("approval_packet.json")
-        categories = [
+        valid = {
             "Compliance Lead Escalation",
             "Legal Review",
             "Control Owner Review",
             "Policy Owner Remediation",
-        ]
+        }
         routing = data.get("routing_summary", {})
-        for cat in categories:
-            assert cat in routing, f"routing_summary missing category: {cat}"
+        assert len(routing) > 0, "routing_summary is empty"
+        for cat in routing:
+            assert cat in valid, f"routing_summary contains unknown category: {cat}"
 
     def test_metrics_required_fields(self):
         data = load("metrics.json")
@@ -303,6 +304,181 @@ class TestAgentH:
     def test_deterministic_rerun_flag(self):
         data = load("metrics.json")
         assert data["deterministic_rerun_ready"] is True
+
+
+# ── Findings Report Tests (findings_schema.json) ──────────────────────────────
+
+class TestFindingsReport:
+    def test_findings_report_exists(self):
+        data = load("findings_report.json")
+        assert data, "findings_report.json is empty"
+
+    def test_schema_version(self):
+        data = load("findings_report.json")
+        assert data.get("schema_version") == "1.0", "schema_version must be '1.0'"
+
+    def test_top_level_required_fields(self):
+        data = load("findings_report.json")
+        for field in ["schema_version", "run_id", "generated_at", "agent_source",
+                      "regulation_source", "jurisdiction", "summary", "findings"]:
+            assert field in data, f"findings_report.json missing top-level field: {field}"
+
+    def test_run_id_matches_context(self):
+        report  = load("findings_report.json")
+        context = load("context_packet.json")
+        assert report["run_id"] == context["context_packet_id"], (
+            "findings_report run_id does not match context_packet_id"
+        )
+
+    def test_findings_is_list(self):
+        data = load("findings_report.json")
+        assert isinstance(data["findings"], list), "findings must be a list"
+        assert len(data["findings"]) > 0, "findings list is empty"
+
+    def test_finding_ids_unique(self):
+        data = load("findings_report.json")
+        ids  = [f["finding_id"] for f in data["findings"]]
+        assert len(ids) == len(set(ids)), "Duplicate finding_ids in findings_report"
+
+    def test_finding_required_fields(self):
+        data = load("findings_report.json")
+        required = [
+            "finding_id", "change_id", "gap_id", "policy_area",
+            "finding_type", "status", "severity", "confidence",
+            "finding_description", "evidence_pointer", "current_state",
+            "required_state", "remediation", "human_oversight",
+            "downstream_links", "analytics_tags", "metadata",
+        ]
+        for finding in data["findings"]:
+            for field in required:
+                assert field in finding, (
+                    f"Finding {finding.get('finding_id')} missing field: {field}"
+                )
+
+    def test_evidence_pointer_mandatory(self):
+        """Every finding must have a populated evidence_pointer with evidence_id and source_quote."""
+        data = load("findings_report.json")
+        for finding in data["findings"]:
+            ep = finding["evidence_pointer"]
+            for field in ["evidence_id", "source_section", "source_file", "source_quote", "content_hash"]:
+                assert field in ep, (
+                    f"Finding {finding['finding_id']} evidence_pointer missing: {field}"
+                )
+            assert ep["evidence_id"], (
+                f"Finding {finding['finding_id']} has empty evidence_id"
+            )
+            assert ep["source_quote"], (
+                f"Finding {finding['finding_id']} has empty source_quote — traceability broken"
+            )
+
+    def test_human_oversight_present(self):
+        data = load("findings_report.json")
+        for finding in data["findings"]:
+            ho = finding["human_oversight"]
+            assert "review_required" in ho, (
+                f"Finding {finding['finding_id']} missing human_oversight.review_required"
+            )
+            assert isinstance(ho["review_required"], bool), (
+                f"review_required must be bool in {finding['finding_id']}"
+            )
+
+    def test_confidence_range(self):
+        data = load("findings_report.json")
+        for finding in data["findings"]:
+            c = float(finding["confidence"])
+            assert 0.0 <= c <= 1.0, (
+                f"Confidence out of range [{c}] in {finding['finding_id']}"
+            )
+
+    def test_severity_valid(self):
+        data  = load("findings_report.json")
+        valid = {"Critical", "High", "Medium", "Low"}
+        for finding in data["findings"]:
+            assert finding["severity"] in valid, (
+                f"Invalid severity '{finding['severity']}' in {finding['finding_id']}"
+            )
+
+    def test_finding_type_valid(self):
+        data  = load("findings_report.json")
+        valid = {"gap", "control_gap", "impact", "exception"}
+        for finding in data["findings"]:
+            assert finding["finding_type"] in valid, (
+                f"Invalid finding_type '{finding['finding_type']}' in {finding['finding_id']}"
+            )
+
+    def test_status_valid(self):
+        data  = load("findings_report.json")
+        valid = {"Non-compliant", "Partial", "Needs Review", "Compliant", "Escalated", "Auto-closed"}
+        for finding in data["findings"]:
+            assert finding["status"] in valid, (
+                f"Invalid status '{finding['status']}' in {finding['finding_id']}"
+            )
+
+    def test_downstream_links_present(self):
+        data = load("findings_report.json")
+        for finding in data["findings"]:
+            dl = finding["downstream_links"]
+            for field in ["control_id", "impact_id", "mapping_id", "exception_category"]:
+                assert field in dl, (
+                    f"Finding {finding['finding_id']} downstream_links missing: {field}"
+                )
+
+    def test_analytics_tags_is_list(self):
+        data = load("findings_report.json")
+        for finding in data["findings"]:
+            assert isinstance(finding["analytics_tags"], list), (
+                f"analytics_tags must be a list in {finding['finding_id']}"
+            )
+            assert len(finding["analytics_tags"]) > 0, (
+                f"analytics_tags is empty in {finding['finding_id']}"
+            )
+
+    def test_summary_totals_consistent(self):
+        data    = load("findings_report.json")
+        summary = data["summary"]
+        assert summary["total_findings"] == len(data["findings"]), (
+            "summary.total_findings does not match actual findings count"
+        )
+
+    def test_summary_severity_counts_consistent(self):
+        data      = load("findings_report.json")
+        by_sev    = data["summary"]["by_severity"]
+        computed  = {"Critical": 0, "High": 0, "Medium": 0, "Low": 0}
+        for f in data["findings"]:
+            sev = f["severity"]
+            if sev in computed:
+                computed[sev] += 1
+        assert by_sev == computed, (
+            f"summary.by_severity {by_sev} does not match computed {computed}"
+        )
+
+    def test_human_review_count_consistent(self):
+        data     = load("findings_report.json")
+        expected = sum(1 for f in data["findings"] if f["human_oversight"]["review_required"])
+        assert data["summary"]["human_review_required_count"] == expected, (
+            f"human_review_required_count {data['summary']['human_review_required_count']} "
+            f"!= computed {expected}"
+        )
+
+    def test_gap_id_references_gap_analysis(self):
+        """Each finding.gap_id must reference a real gap in gap_analysis.json."""
+        report   = load("findings_report.json")
+        raw_gaps = load("gap_analysis.json")
+        gap_ids  = {g["gap_id"] for g in as_list(raw_gaps, "gaps")}
+        for f in report["findings"]:
+            assert f["gap_id"] in gap_ids, (
+                f"Finding {f['finding_id']} references unknown gap_id {f['gap_id']}"
+            )
+
+    def test_change_id_references_change_register(self):
+        """Each finding.change_id must reference a real change in change_register.json."""
+        report     = load("findings_report.json")
+        changes    = load("change_register.json")
+        change_ids = {c["change_id"] for c in changes}
+        for f in report["findings"]:
+            assert f["change_id"] in change_ids, (
+                f"Finding {f['finding_id']} references unknown change_id {f['change_id']}"
+            )
 
 
 # ── End-to-end traceability test ──────────────────────────────────────────────

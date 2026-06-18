@@ -63,25 +63,3 @@ Run dashboard:
 ```bash
 streamlit run dashboard/streamlit_app.py
 ```
-
-## Team Split
-
-### Person 1
-- Agent A - Regulatory Feed Intake
-- Agent B - Change Extraction
-- Findings Schema Design
-
-### Person 2
-- Agent C - Gap Analysis
-- Agent D - Impact Assessment
-- Policy Pack Configuration
-
-### Person 3
-- Agent E - Control Mapping
-- Agent H - Orchestration
-- Streamlit Dashboard
-- Testing & Documentation
-- Final Presentation
-
-## Important Requirement
-Do not remove audit trail, evidence pointers, confidence scores, metrics, or JSON outputs. They are part of the project requirements.

@@ -18,7 +18,7 @@
       "source": "char_offset_estimate"
     },
     "extraction_method": "rule_based",
-    "extracted_at": "2026-06-17T11:27:49.013849Z"
+    "extracted_at": "2026-06-18T14:35:42.780245Z"
   },
   {
     "change_id": "CHG-002",
@@ -39,7 +39,7 @@
       "source": "char_offset_estimate"
     },
     "extraction_method": "rule_based",
-    "extracted_at": "2026-06-17T11:27:49.015927Z"
+    "extracted_at": "2026-06-18T14:35:42.782203Z"
   },
   {
     "change_id": "CHG-003",
@@ -60,7 +60,7 @@
       "source": "char_offset_estimate"
     },
     "extraction_method": "rule_based",
-    "extracted_at": "2026-06-17T11:27:49.016234Z"
+    "extracted_at": "2026-06-18T14:35:42.783649Z"
   },
   {
     "change_id": "CHG-004",
@@ -81,7 +81,7 @@
       "source": "char_offset_estimate"
     },
     "extraction_method": "rule_based",
-    "extracted_at": "2026-06-17T11:27:49.016498Z"
+    "extracted_at": "2026-06-18T14:35:42.785633Z"
   },
   {
     "change_id": "CHG-005",
@@ -102,6 +102,6 @@
       "source": "char_offset_estimate"
     },
     "extraction_method": "rule_based",
-    "extracted_at": "2026-06-17T11:27:49.017740Z"
+    "extracted_at": "2026-06-18T14:35:42.787803Z"
   }
 ]
